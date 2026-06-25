@@ -1,0 +1,778 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Petualangan Angka Ceria: Penjumlahan & Pengurangan</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600;700&family=Azeret+Mono:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <style>
+        :root {
+            --bg-pastel: #fdf6e2;
+            --primary: #f59e0b;
+            --secondary: #3b82f6;
+            --accent-green: #4ade80;
+            --accent-pink: #fbcfe8;
+            --text-dark: #1e293b;
+            --correct-green: #22c55e;
+            --wrong-red: #ef4444;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { 
+            background-color: #cbd5e1; 
+            display: grid; 
+            place-items: center; 
+            min-height: 100vh; 
+            font-family: 'Fredoka', sans-serif; 
+            color: var(--text-dark);
+            user-select: none;
+            overflow: hidden;
+        }
+
+        .slide-container {
+            width: 1280px;
+            height: 720px;
+            background-color: var(--bg-pastel);
+            border: 8px solid #fbbf24;
+            border-radius: 24px;
+            position: relative;
+            display: none;
+            padding: 30px 50px;
+            flex-direction: column;
+            justify-content: flex-start;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.15);
+        }
+
+        .slide-container.active { display: flex; }
+
+        h1 { font-size: 52px; color: #b45309; text-align: center; text-shadow: 2px 2px 0px #fef08a; margin-bottom: 10px; }
+        h2 { font-size: 34px; color: #1e3a8a; margin-bottom: 15px; display: flex; align-items: center; gap: 10px; }
+        h3 { font-size: 24px; margin-bottom: 10px; color: #0f172a; }
+        p, li { font-size: 20px; line-height: 1.5; color: #334155; }
+
+        .content-area { flex-grow: 1; width: 100%; overflow-y: auto; padding-right: 5px; }
+        .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; width: 100%; }
+        .grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 20px; width: 100%; }
+        
+        .kids-card { background: white; border: 4px solid #e2e8f0; padding: 20px; border-radius: 18px; position: relative; box-shadow: 0 8px 0px #cbd5e1; transition: all 0.2s; }
+        .kids-card.yellow { border-color: #fde047; box-shadow: 0 8px 0px #fef08a; }
+        .kids-card.blue { border-color: #93c5fd; box-shadow: 0 8px 0px #bfdbfe; }
+        .kids-card.pink { border-color: #fbcfe8; box-shadow: 0 8px 0px #fce7f3; }
+
+        .btn-ceria {
+            background: linear-gradient(135deg, #fbbf24, #f59e0b); color: white; border: none; padding: 10px 24px;
+            border-radius: 12px; cursor: pointer; font-family: 'Fredoka'; font-weight: 600; font-size: 18px;
+            box-shadow: 0 4px 0px #b45309; transition: all 0.1s; display: inline-flex; align-items: center; gap: 8px; text-decoration: none;
+        }
+        .btn-ceria:active { transform: translateY(4px); box-shadow: none; }
+        .btn-ceria-blue { background: linear-gradient(135deg, #3b82f6, #1d4ed8); box-shadow: 0 4px 0px #1e3a8a; }
+        .btn-ceria-pink { background: linear-gradient(135deg, #ec4899, #be185d); box-shadow: 0 4px 0px #9d174d; }
+
+        input[type="text"], input[type="number"] {
+            background: #f8fafc; border: 3px solid #cbd5e1; border-radius: 10px; color: var(--text-dark); padding: 8px 12px; font-family: 'Fredoka'; font-size: 18px; text-align: center; outline: none;
+        }
+        input:focus { border-color: #f59e0b; }
+        
+        input[type="number"]::-webkit-outer-spin-button,
+        input[type="number"]::-webkit-inner-spin-button {
+            -webkit-appearance: none;
+            margin: 0;
+        }
+        input[type="number"] { -moz-appearance: textfield; }
+        
+        .workspace-bersusun {
+            display: inline-flex; flex-direction: column; align-items: flex-end; font-family: 'Azeret Mono', monospace; position: relative; padding-right: 30px; margin-top: 10px;
+        }
+        .row-bersusun { display: flex; gap: 6px; margin-bottom: 6px; }
+        .digit-grid-input { width: 46px; height: 46px; font-size: 24px; font-weight: bold; text-align: center; border-radius: 8px; border: 3px solid #cbd5e1; font-family: 'Azeret Mono', monospace; padding: 0; }
+        .line-bersusun { width: 100%; border-bottom: 4px solid #1e293b; margin: 4px 0; position: relative; }
+        .sign-bersusun { position: absolute; right: -25px; bottom: -15px; font-size: 28px; font-weight: bold; }
+
+        .correct { border-color: var(--correct-green) !important; background-color: #f0fdf4 !important; color: var(--correct-green) !important; }
+        .wrong { border-color: var(--wrong-red) !important; background-color: #fef2f2 !important; color: var(--wrong-red) !important; }
+
+        .nav-controls { position: fixed; bottom: 20px; right: 50px; display: flex; gap: 15px; z-index: 1000; }
+        .nav-btn { background: white; color: var(--text-dark); border: 3px solid #cbd5e1; width: 50px; height: 50px; border-radius: 15px; display: flex; align-items: center; justify-content: center; cursor: pointer; font-size: 20px; box-shadow: 0 4px 0 #cbd5e1; }
+        .nav-btn:active { transform: translateY(4px); box-shadow: none; }
+        .slide-num { position: absolute; bottom: 20px; left: 50px; font-size: 16px; font-weight: bold; color: #64748b; }
+
+        .expl-box { display: none; margin-top: 15px; padding: 15px; background: #fffbeb; border: 3px dashed #f59e0b; border-radius: 12px; font-size: 18px; }
+
+        /* Slide 10 Interaktif */
+        .story-scroller { height: 430px; overflow-y: auto; padding: 15px; background: white; border-radius: 18px; border: 4px solid #fbcfe8; box-shadow: 0 8px 0px #fce7f3; }
+        .story-paragraph { font-size: 21px; line-height: 2; color: #334155; margin-bottom: 30px; text-align: justify; }
+        .inline-story-input { width: 105px; height: 38px; font-size: 19px; margin: 0 6px; padding: 0; font-weight: bold; display: inline-block; vertical-align: middle; }
+        .inline-check-btn { background: #db2777; color: white; border: none; padding: 4px 10px; font-family: 'Fredoka'; font-size: 14px; border-radius: 8px; cursor: pointer; font-weight: 600; margin-left: 4px; display: inline-block; vertical-align: middle; }
+        .inline-check-btn:active { transform: scale(0.95); }
+
+        /* Slide Kartu Duel */
+        .deck-grid { display: grid; grid-template-columns: 480px 1fr 240px; gap: 15px; height: 430px; }
+        .cards-container { display: grid; grid-template-columns: repeat(5, 1fr); gap: 10px; }
+        .close-card { height: 80px; background: linear-gradient(135deg, #60a5fa, #3b82f6); color: white; border: 3px solid #1d4ed8; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 28px; font-weight: bold; cursor: pointer; box-shadow: 0 4px 0 #1e3a8a; }
+        .close-card.active { background: #e2e8f0; border-color: #94a3b8; color: #64748b; box-shadow: none; transform: translateY(4px); }
+        .timer-box { font-size: 32px; font-weight: bold; text-align: center; color: var(--wrong-red); background: white; border-radius: 12px; padding: 5px; border: 3px solid var(--wrong-red); }
+
+        .math-bersusun { font-family: 'Azeret Mono', monospace; font-size: 36px; line-height: 1.2; text-align: right; width: fit-content; margin: 0 auto; letter-spacing: 4px; position: relative;}
+        .math-line { border-bottom: 4px solid #1e293b; margin-top: 4px; margin-bottom: 4px; position: relative; width: 100%; display: block;}
+        .math-sign { position: absolute; right: -25px; bottom: -12px; font-size: 28px; }
+    </style>
+</head>
+<body>
+
+    <div class="slide-container active" id="slide1" style="background: linear-gradient(#fef3c7, #fde68a); justify-content: center; align-items: center; text-align: center;">
+        <div style="font-size: 80px; margin-bottom: 10px;">👑🧮✨</div>
+        <h1>Petualangan Angka Ceria:<br><span style="color:#2563eb; font-size: 46px;">Misi Penjumlahan & Pengurangan</span></h1>
+        <div class="kids-card blue" style="width: 450px; margin-top: 30px; padding: 25px;">
+            <h3 style="margin-bottom: 15px; font-size: 20px;">Halo Sahabat Matematika! Masukkan Namamu:</h3>
+            <input type="text" id="student_name" placeholder="Tulis namamu di sini..." style="width: 100%; font-size: 20px; padding: 10px; margin-bottom: 15px;" oninput="syncStudentName()">
+            <p style="font-size: 15px; color:#64748b;">Namamu akan dipanggil ketika berhasil menjawab misi!</p>
+        </div>
+    </div>
+
+    <div class="slide-container" id="slide2">
+        <h2><i class="fa-solid fa-map-location-dot" style="color: #f59e0b;"></i> Peta Kompetensi Kita</h2>
+        <div class="content-area" style="display: flex; align-items: center; justify-content: center; height: 80%;">
+            <div class="kids-card yellow" style="width: 850px; padding: 35px;">
+                <h3 style="color:#b45309; font-size: 26px; margin-bottom: 20px;"><i class="fa-solid fa-star"></i> Setelah petualangan ini, kamu akan hebat dalam:</h3>
+                <ul style="display: grid; gap: 20px; list-style-type: none;">
+                    <li><i class="fa-solid fa-circle-check" style="color: var(--correct-green); font-size: 26px;"></i> Menghitung penjumlahan dan pengurangan angka puluhan secara kilat cepat.</li>
+                    <li><i class="fa-solid fa-circle-check" style="color: var(--correct-green); font-size: 26px;"></i> Memahami teknik bersusun ratusan dan ribuan dengan konsep nilai tempat lengkap.</li>
+                    <li><i class="fa-solid fa-circle-check" style="color: var(--correct-green); font-size: 26px;"></i> Menguasai trik rahasia "Metode Meminjam" jika angka pengurang lebih besar.</li>
+                    <li><i class="fa-solid fa-circle-check" style="color: var(--correct-green); font-size: 26px;"></i> Menjadi detektif cerdas yang mampu memecahkan soal cerita kehidupan sehari-hari.</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <div class="slide-container" id="slide3">
+        <h2><i class="fa-solid fa-fire" style="color: #ef4444;"></i> Pemanasan Otak 1: Operasi Penjumlahan Puluhan</h2>
+        <div class="content-area">
+            <p style="margin-bottom: 25px;">Ayo selesaikan tantangan penjumlahan puluhan berikut secara mandiri!</p>
+            <div class="kids-card blue" style="max-width: 550px; margin: 30px auto; text-align: center; padding: 40px;">
+                <h1 id="s3_quest" style="font-size: 64px; color: #1e3a8a; margin-bottom: 25px;">-- + --</h1>
+                <div style="display: flex; gap: 15px; justify-content: center; align-items: center; margin-bottom: 20px;">
+                    <input type="number" id="s3_ans" placeholder="Jawaban" style="width: 160px; font-size: 24px; height: 55px;">
+                    <button class="btn-ceria" onclick="checkS3()">Cek Hasil</button>
+                </div>
+                <button class="btn-ceria btn-ceria-pink" onclick="genS3()"><i class="fa-solid fa-rotate"></i> Ganti Soal (Misi <span id="s3_count">1</span>/20)</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="slide-container" id="slide4">
+        <h2><i class="fa-solid fa-bolt" style="color: #2563eb;"></i> Pemanasan Otak 2: Operasi Pengurangan Puluhan</h2>
+        <div class="content-area">
+            <p style="margin-bottom: 25px;">Ayo selesaikan tantangan pengurangan puluhan berikut secara mandiri!</p>
+            <div class="kids-card yellow" style="max-width: 550px; margin: 30px auto; text-align: center; padding: 40px;">
+                <h1 id="s4_quest" style="font-size: 64px; color: #b45309; margin-bottom: 25px;">-- - --</h1>
+                <div style="display: flex; gap: 15px; justify-content: center; align-items: center; margin-bottom: 20px;">
+                    <input type="number" id="s4_ans" placeholder="Jawaban" style="width: 160px; font-size: 24px; height: 55px;">
+                    <button class="btn-ceria btn-ceria-blue" onclick="checkS4()">Cek Hasil</button>
+                </div>
+                <button class="btn-ceria" onclick="genS4()"><i class="fa-solid fa-rotate"></i> Ganti Soal (Misi <span id="s4_count">1</span>/20)</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="slide-container" id="slide5">
+        <h2><i class="fa-solid fa-layer-group" style="color: #3b82f6;"></i> Konsep: Penjumlahan Bersusun Ratusan</h2>
+        <div class="content-area">
+            <div class="grid-2" style="margin-top: 20px;">
+                <div class="kids-card yellow" style="padding: 25px;">
+                    <h3 style="color: #b45309;"><i class="fa-solid fa-list-ol"></i> Langkah Demi Langkah:</h3>
+                    <ul style="margin-left: 20px; display: grid; gap: 15px; margin-top: 15px;">
+                        <li><b>Langkah 1:</b> Tulis bilangan secara sejajar ke bawah sesuai nilai tempatnya (Ribuan, Ratusan, Puluhan, Satuan).</li>
+                        <li><b>Langkah 2:</b> Jumlahkan dari kolom paling kanan belakang (**Satuan**). Jika hasilnya ≥ 10, simpan angka puluhannya di atas kolom depan.</li>
+                        <li><b>Langkah 3:</b> Jumlahkan kolom depan (**Puluhan**) beserta angka yang disimpan tadi.</li>
+                        <li><b>Langkah 4:</b> Selesaikan penjumlahan di kolom berikutnya hingga selesai ke kiri.</li>
+                    </ul>
+                </div>
+                <div class="kids-card pink" style="display: flex; flex-direction: column; justify-content: center; align-items: center;">
+                    <h3 style="margin-bottom: 20px;">Contoh: 248 + 135</h3>
+                    <div class="math-bersusun">
+                        <span style="font-size: 16px; color: var(--wrong-red); position: absolute; left: 45px; top: -18px;">¹</span>
+                        248<br>
+                        135<br>
+                        <span class="math-line"></span><span class="math-sign">+</span>
+                        <b>383</b>
+                    </div>
+                    <div style="margin-top: 15px; background: white; padding: 8px; border-radius: 8px; font-size: 14px; text-align: center; border: 1px solid #cbd5e1;">
+                        *8 + 5 = 13 (Tulis 3, simpan 1 di atas angka 4)*
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="slide-container" id="slide6">
+        <h2><i class="fa-solid fa-scissors" style="color: #ec4899;"></i> Konsep Rahasia: Metode Meminjam Teman</h2>
+        <div class="content-area">
+            <div class="grid-2" style="margin-top: 15px;">
+                <div class="kids-card blue" style="padding: 25px;">
+                    <h3 style="color:#1d4ed8;"><i class="fa-solid fa-lightbulb"></i> Aturan Meminjam:</h3>
+                    <p style="margin-bottom: 10px; font-size: 18px;">Jika angka di atas **lebih kecil** daripada angka di bawah, ia tidak bisa dikurangi langsung! Solusinya:</p>
+                    <ul style="margin-left: 20px; display: grid; gap: 10px; font-size: 16px;">
+                        <li>Pinjam **1 puluhan** dari angka yang berada persis di sebelah kirinya.</li>
+                        <li>Angka sebelah kiri nilainya akan **berkurang 1**.</li>
+                        <li>Angka yang meminjam akan mendapat tambahan **nilai 10**, sehingga sekarang menjadi cukup besar untuk dikurangi angka bawah.</li>
+                    </ul>
+                </div>
+                <div class="kids-card yellow" style="display: flex; flex-direction: column; justify-content: center; align-items: center;">
+                    <h3 style="margin-bottom: 15px;">Contoh: 425 - 182</h3>
+                    <div class="math-bersusun">
+                        <span style="font-size: 14px; color: #1d4ed8; position: absolute; left: 0px; top: -18px;">³ 📋¹²</span>
+                        425<br>
+                        182<br>
+                        <span class="math-line"></span><span class="math-sign">-</span>
+                        <b>243</b>
+                    </div>
+                    <div style="margin-top: 15px; background: white; padding: 8px; border-radius: 8px; font-size: 13px; text-align: center; border: 1px solid #cbd5e1;">
+                        *Di kolom puluhan, 2 tidak bisa dikurangi 8. Pinjam 1 dari angka 4. Angka 4 menjadi 3, dan angka 2 menjadi 12.*
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="slide-container" id="slide7">
+        <h2><i class="fa-solid fa-table-cells" style="color: var(--accent-green);"></i> Tantangan Penjumlahan Bersusun Nilai Tempat</h2>
+        <div class="content-area">
+            <div class="kids-card yellow" style="max-width: 700px; margin: 0 auto 15px auto; padding: 15px; text-align: center; display: flex; align-items: center; justify-content: center; gap: 15px;">
+                <span style="font-size: 28px; font-weight: bold; color: #1e3a8a;" id="s6_mendatar_quest">2345 + 1432 = </span>
+                <input type="number" id="s6_mendatar_ans" placeholder="Hasil akhir" style="width: 160px; font-size: 22px; height: 45px;">
+            </div>
+
+            <div class="kids-card pink" style="max-width: 650px; margin: 0 auto; padding: 20px; text-align: center;">
+                <p style="font-size: 16px; margin-bottom: 10px; color: #475569; font-weight: bold;">Salin soal ke dalam kotak bersusun & hitung per kolom:</p>
+                
+                <div class="workspace-bersusun">
+                    <div class="row-bersusun">
+                        <input type="number" id="s6_w_1_1" class="digit-grid-input" oninput="limitOneDigit(this)">
+                        <input type="number" id="s6_w_1_2" class="digit-grid-input" oninput="limitOneDigit(this)">
+                        <input type="number" id="s6_w_1_3" class="digit-grid-input" oninput="limitOneDigit(this)">
+                        <input type="number" id="s6_w_1_4" class="digit-grid-input" oninput="limitOneDigit(this)">
+                    </div>
+                    <div class="row-bersusun">
+                        <input type="number" id="s6_w_2_1" class="digit-grid-input" oninput="limitOneDigit(this)">
+                        <input type="number" id="s6_w_2_2" class="digit-grid-input" oninput="limitOneDigit(this)">
+                        <input type="number" id="s6_w_2_3" class="digit-grid-input" oninput="limitOneDigit(this)">
+                        <input type="number" id="s6_w_2_4" class="digit-grid-input" oninput="limitOneDigit(this)">
+                    </div>
+                    <div class="line-bersusun"><span class="sign-bersusun">+</span></div>
+                    <div class="row-bersusun" style="margin-top: 6px;">
+                        <input type="number" id="s6_ans_1" class="digit-grid-input" oninput="limitOneDigit(this)">
+                        <input type="number" id="s6_ans_2" class="digit-grid-input" oninput="limitOneDigit(this)">
+                        <input type="number" id="s6_ans_3" class="digit-grid-input" oninput="limitOneDigit(this)">
+                        <input type="number" id="s6_ans_4" class="digit-grid-input" oninput="limitOneDigit(this)">
+                    </div>
+                </div>
+
+                <div style="display: flex; gap: 15px; justify-content: center; margin-top: 15px;">
+                    <button class="btn-ceria btn-ceria-blue" onclick="checkS6()">Verifikasi Semua Kolom</button>
+                    <button class="btn-ceria" onclick="genS6()"><i class="fa-solid fa-rotate"></i> Soal Baru (<span id="s6_count">1</span>/20)</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="slide-container" id="slide8">
+        <h2><i class="fa-solid fa-table-cells" style="color: #3b82f6;"></i> Tantangan Pengurangan Bersusun Nilai Tempat</h2>
+        <div class="content-area">
+            <div class="kids-card yellow" style="max-width: 700px; margin: 0 auto 15px auto; padding: 15px; text-align: center; display: flex; align-items: center; justify-content: center; gap: 15px;">
+                <span style="font-size: 28px; font-weight: bold; color: #b45309;" id="s7_mendatar_quest">5678 - 2345 = </span>
+                <input type="number" id="s7_mendatar_ans" placeholder="Hasil akhir" style="width: 160px; font-size: 22px; height: 45px;">
+            </div>
+
+            <div class="kids-card blue" style="max-width: 650px; margin: 0 auto; padding: 20px; text-align: center;">
+                <p style="font-size: 16px; margin-bottom: 10px; color: #475569; font-weight: bold;">Salin soal ke dalam kotak bersusun & hitung per kolom:</p>
+                
+                <div class="workspace-bersusun">
+                    <div class="row-bersusun">
+                        <input type="number" id="s7_w_1_1" class="digit-grid-input" oninput="limitOneDigit(this)">
+                        <input type="number" id="s7_w_1_2" class="digit-grid-input" oninput="limitOneDigit(this)">
+                        <input type="number" id="s7_w_1_3" class="digit-grid-input" oninput="limitOneDigit(this)">
+                        <input type="number" id="s7_w_1_4" class="digit-grid-input" oninput="limitOneDigit(this)">
+                    </div>
+                    <div class="row-bersusun">
+                        <input type="number" id="s7_w_2_1" class="digit-grid-input" oninput="limitOneDigit(this)">
+                        <input type="number" id="s7_w_2_2" class="digit-grid-input" oninput="limitOneDigit(this)">
+                        <input type="number" id="s7_w_2_3" class="digit-grid-input" oninput="limitOneDigit(this)">
+                        <input type="number" id="s7_w_2_4" class="digit-grid-input" oninput="limitOneDigit(this)">
+                    </div>
+                    <div class="line-bersusun"><span class="sign-bersusun">-</span></div>
+                    <div class="row-bersusun" style="margin-top: 6px;">
+                        <input type="number" id="s7_ans_1" class="digit-grid-input" oninput="limitOneDigit(this)">
+                        <input type="number" id="s7_ans_2" class="digit-grid-input" oninput="limitOneDigit(this)">
+                        <input type="number" id="s7_ans_3" class="digit-grid-input" oninput="limitOneDigit(this)">
+                        <input type="number" id="s7_ans_4" class="digit-grid-input" oninput="limitOneDigit(this)">
+                    </div>
+                </div>
+
+                <div style="display: flex; gap: 15px; justify-content: center; margin-top: 15px;">
+                    <button class="btn-ceria btn-ceria-pink" onclick="checkS7()">Verifikasi Semua Kolom</button>
+                    <button class="btn-ceria btn-ceria-blue" onclick="genS7()"><i class="fa-solid fa-rotate"></i> Soal Baru (<span id="s7_count">1</span>/20)</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="slide-container" id="slide9">
+        <h2><i class="fa-solid fa-book-open" style="color: #a855f7;"></i> Detektif Cerita: Kasus Penjumlahan</h2>
+        <div class="content-area">
+            <div class="kids-card blue" style="padding: 25px; margin-top: 20px;">
+                <p id="s8_story" style="font-size: 22px; font-weight: 600; margin-bottom: 25px; min-height: 80px; line-height: 1.6;">Loading kisah...</p>
+                <div style="display: flex; gap: 15px; align-items: center; margin-bottom: 15px;">
+                    <input type="number" id="s8_ans" placeholder="Ketik hasil akhir angka" style="width: 250px; height: 50px; font-size: 20px;">
+                    <button class="btn-ceria" onclick="checkS8()">Periksa Jawaban</button>
+                    <button class="btn-ceria btn-ceria-blue" onclick="toggleExpl('s8_expl', bankS8[idxS8].ex)">Buka Tips Solusi</button>
+                    <button class="btn-ceria btn-ceria-pink" onclick="genS8()"><i class="fa-solid fa-forward"></i> Kasus Cerita Lain (<span id="s8_count">1</span>/10)</button>
+                </div>
+                <div id="s8_expl" class="expl-box"></div>
+            </div>
+        </div>
+    </div>
+
+    <div class="slide-container" id="slide10">
+        <h2><i class="fa-solid fa-book-open" style="color: #ec4899;"></i> Detektif Cerita: Kasus Pengurangan</h2>
+        <div class="content-area">
+            <div class="kids-card yellow" style="padding: 25px; margin-top: 20px;">
+                <p id="s9_story" style="font-size: 22px; font-weight: 600; margin-bottom: 25px; min-height: 80px; line-height: 1.6;">Loading kisah...</p>
+                <div style="display: flex; gap: 15px; align-items: center; margin-bottom: 15px;">
+                    <input type="number" id="s9_ans" placeholder="Ketik hasil akhir angka" style="width: 250px; height: 50px; font-size: 20px;">
+                    <button class="btn-ceria btn-ceria-pink" onclick="checkS9()">Periksa Jawaban</button>
+                    <button class="btn-ceria btn-ceria-blue" onclick="toggleExpl('s9_expl', bankS9[idxS9].ex)">Buka Tips Solusi</button>
+                    <button class="btn-ceria" onclick="genS9()"><i class="fa-solid fa-forward"></i> Kasus Cerita Lain (<span id="s9_count">1</span>/10)</button>
+                </div>
+                <div id="s9_expl" class="expl-box"></div>
+            </div>
+        </div>
+    </div>
+
+    <div class="slide-container" id="slide11">
+        <h2><i class="fa-solid fa-wand-magic-sparkles" style="color: #db2777;"></i> Negeri Dongeng: Istana Matematika Cinderella & Kucing Asep</h2>
+        <div class="content-area" style="overflow:hidden;">
+            <div style="display: flex; gap: 20px; align-items: center; background: white; padding: 10px; border-radius: 12px; margin-bottom: 15px; border: 2px solid #fbcfe8;">
+                <button class="btn-ceria btn-ceria-pink" onclick="toggleFairytaleBgm()"><i class="fa-solid fa-music"></i> Musik Latar</button>
+                <div style="display:flex; align-items:center; gap:8px;">
+                    <span style="font-size:14px; font-weight:bold; color:#be185d;">Volume:</span>
+                    <input type="range" id="bgm_vol" min="0" max="100" value="30" style="width:100px;" oninput="adjustBgmVolume(this.value)">
+                </div>
+                <p style="font-size:15px; color:#be185d; font-weight:bold;"><i class="fa-solid fa-scroll"></i> Geser/Scroll ke bawah cerita untuk melengkapi seluruh 10 jawaban!</p>
+            </div>
+            
+            <div class="story-scroller" id="disney_story_container">
+                </div>
+        </div>
+    </div>
+
+    <div class="slide-container" id="slide12">
+        <h2><i class="fa-solid fa-boxes-stacked" style="color: #2563eb;"></i> Arena Duel: 10 Kartu Rahasia Berwaktu</h2>
+        <div class="content-area" style="overflow:hidden;">
+            <div class="deck-grid">
+                <div>
+                    <h3 style="font-size:16px; margin-bottom:8px;"><i class="fa-solid fa-id-card"></i> Pilih Nomor Kartu (1-10):</h3>
+                    <div class="cards-container" id="battle_deck_container"></div>
+                </div>
+                <div class="kids-card yellow" style="display:flex; flex-direction:column; justify-content:space-between; padding:15px;">
+                    <div>
+                        <div style="display:flex; justify-content:between; align-items:center;">
+                            <span style="font-weight:bold; color:#b45309; font-size:18px;" id="deck_title">Ketuk kartu untuk memulai!</span>
+                            <div class="timer-box" id="deck_timer">02:00</div>
+                        </div>
+                        <p id="deck_quest_text" style="font-size:16px; line-height:1.4; margin-top:10px; min-height:130px; background:#fff; padding:10px; border-radius:8px; border:2px dashed #fbbf24;">Misi soal cerita akan tampil di sini saat kartu dibuka.</p>
+                    </div>
+                    <div>
+                        <div style="display:flex; gap:10px; align-items:center;">
+                            <input type="number" id="deck_ans" placeholder="Hasil" style="width:120px; height:45px; font-size:18px;">
+                            <button class="btn-ceria" onclick="checkDeckAnswer()">Kirim Jawaban</button>
+                        </div>
+                    </div>
+                </div>
+                <div class="kids-card blue" style="padding:15px; display:flex; flex-direction:column; justify-content:space-between; text-align:center;">
+                    <div>
+                        <h3 style="font-size:18px; margin-bottom:10px;"><i class="fa-solid fa-trophy" style="color:#eab308"></i> Papan Skor</h3>
+                        <div style="background:white; border-radius:10px; padding:15px; border:2px solid #bfdbfe; margin-bottom:10px;">
+                            <p style="font-size:14px; font-weight:bold; color:#64748b;">Nama Siswa:</p>
+                            <p id="score_student_name" style="font-size:18px; font-weight:bold; color:#1e3a8a; margin-bottom:10px;">Siswa</p>
+                            <p style="font-size:14px; font-weight:bold; color:#64748b;">Jumlah Benar:</p>
+                            <p id="student_score_val" style="font-size:48px; font-weight:bold; color:var(--correct-green); line-height:1;">0</p>
+                        </div>
+                    </div>
+                    <button class="btn-ceria btn-ceria-pink" style="font-size:14px; padding:8px;" onclick="announceFinalScore()">📢 Umumkan Hasil</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="slide-container" id="slide13">
+        <h2><i class="fa-solid fa-square-poll-horizontal" style="color: #f59e0b;"></i> Rangkuman Misi & Refleksi Ceria</h2>
+        <div class="content-area">
+            <div class="grid-2" style="margin-top: 15px;">
+                <div class="kids-card blue">
+                    <h3 style="color:#1d4ed8;"><i class="fa-solid fa-key"></i> Kunci Sukses Hari Ini:</h3>
+                    <ul style="display: grid; gap: 12px; list-style: none; font-size: 18px; margin-top: 10px;">
+                        <li><i class="fa-solid fa-check" style="color:var(--correct-green)"></i> **Urutan Sejajar:** Selalu sejajarkan angka sesuai rumah nilainya sebelum berhitung.</li>
+                        <li><i class="fa-solid fa-check" style="color:var(--correct-green)"></i> **Simpanan Tambah:** Jangan lupa menambahkan angka simpanan di atas kolom puluhan/ratusan.</li>
+                        <li><i class="fa-solid fa-check" style="color:var(--correct-green)"></i> **Pinjaman Kurang:** Pinjamlah 1 angka (bernilai 10) dari teman kiri jika angka atasmu kalah besar.</li>
+                    </ul>
+                </div>
+                <div class="kids-card pink">
+                    <h3><i class="fa-solid fa-pen-line"></i> Kotak Perasaan Belajar:</h3>
+                    <p style="font-size:16px; margin-bottom: 10px;">Bagian mana yang menurutmu paling menyenangkan hari ini? Yuk tuliskan pendapatmu!</p>
+                    <textarea style="width:100%; height:130px; border:3px solid #cbd5e1; border-radius:12px; padding:10px; font-family:inherit; font-size:16px; outline:none;" placeholder="Aku paling suka saat..."></textarea>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="slide-container" id="slide14" style="background: linear-gradient(#fce7f3, #fbcfe8); justify-content: center; align-items: center; text-align: center;">
+        <div style="font-size: 90px; margin-bottom: 15px;">🎉🥳🎈</div>
+        <h1 style="font-size: 64px; color: #be185d;">THANK YOU FOR TODAY!</h1>
+        <p style="font-size: 26px; font-weight: 600; color: #475569; margin-top: 10px;">Kamu Telah Menyelesaikan Misi Hitung Campuran dengan Sangat Hebat!</p>
+    </div>
+
+    <div class="nav-controls">
+        <button class="nav-btn" onclick="prevSlide()"><i class="fa-solid fa-chevron-left"></i></button>
+        <button class="nav-btn" onclick="nextSlide()"><i class="fa-solid fa-chevron-right"></i></button>
+    </div>
+    <div class="slide-num" id="global_slide_num">Slide 1 / 14</div>
+
+    <script>
+        let currentSlide = 1;
+        const totalSlides = 14;
+        let currentStudent = "Siswa";
+
+        function showSlide(n) {
+            document.querySelectorAll('.slide-container').forEach(s => s.classList.remove('active'));
+            document.getElementById('slide' + n).classList.add('active');
+            currentSlide = n;
+            document.getElementById('global_slide_num').innerText = `Slide ${n} / ${totalSlides}`;
+            if(n !== 12) stopDeckTimer();
+        }
+        function nextSlide() { if(currentSlide < totalSlides) showSlide(currentSlide + 1); }
+        function prevSlide() { if(currentSlide > 1) showSlide(currentSlide - 1); }
+
+        function syncStudentName() {
+            let inputName = document.getElementById('student_name').value.trim();
+            currentStudent = inputName !== "" ? inputName : "Siswa";
+            document.getElementById('score_student_name').innerText = currentStudent;
+        }
+
+        function speakText(txt) {
+            if ('speechSynthesis' in window) {
+                window.speechSynthesis.cancel();
+                let utterance = new SpeechSynthesisUtterance(txt);
+                utterance.lang = 'id-ID';
+                window.speechSynthesis.speak(utterance);
+            }
+        }
+
+        function limitOneDigit(el) {
+            if (el.value.length > 1) el.value = el.value.slice(0, 1);
+        }
+
+        function toggleExpl(boxId, txt) {
+            let box = document.getElementById(boxId);
+            box.innerText = txt;
+            box.style.display = (box.style.display === 'block') ? 'none' : 'block';
+        }
+
+        // ================= GENERATOR BANK DATA ACAK =================
+        // Slide 3: Pemanasan Tambah
+        const bankS3 = [];
+        for(let i=0; i<20; i++) {
+            let n1 = Math.floor(Math.random() * 40) + 30;
+            let n2 = Math.floor(Math.random() * 20) + 10;
+            bankS3.push({q: `${n1} + ${n2}`, a: n1 + n2});
+        }
+        let idxS3 = 0;
+        function genS3() {
+            idxS3 = (idxS3 + 1) % bankS3.length;
+            document.getElementById('s3_quest').innerText = bankS3[idxS3].q;
+            document.getElementById('s3_ans').value = ''; document.getElementById('s3_ans').className = '';
+            document.getElementById('s3_count').innerText = idxS3 + 1;
+        }
+        function checkS3() {
+            let userAns = parseInt(document.getElementById('s3_ans').value);
+            let inp = document.getElementById('s3_ans');
+            if(userAns === bankS3[idxS3].a) { inp.className = 'correct'; speakText(`Benar ${currentStudent}!`); } 
+            else { inp.className = 'wrong'; speakText("Coba lagi"); }
+        }
+
+        // Slide 4: Pemanasan Kurang (Diaktifkan kembali!)
+        const bankS4 = [];
+        for(let i=0; i<20; i++) {
+            let n1 = Math.floor(Math.random() * 40) + 50;
+            let n2 = Math.floor(Math.random() * 30) + 10;
+            bankS4.push({q: `${n1} - ${n2}`, a: n1 - n2});
+        }
+        let idxS4 = 0;
+        function genS4() {
+            idxS4 = (idxS4 + 1) % bankS4.length;
+            document.getElementById('s4_quest').innerText = bankS4[idxS4].q;
+            document.getElementById('s4_ans').value = ''; document.getElementById('s4_ans').className = '';
+            document.getElementById('s4_count').innerText = idxS4 + 1;
+        }
+        function checkS4() {
+            let userAns = parseInt(document.getElementById('s4_ans').value);
+            let inp = document.getElementById('s4_ans');
+            if(userAns === bankS4[idxS4].a) { inp.className = 'correct'; speakText(`Benar ${currentStudent}!`); } 
+            else { inp.className = 'wrong'; speakText("Periksa kembali penguranganmu."); }
+        }
+
+        // Slide 7 & 8: Bersusun Grid Ratusan/Ribuan
+        const bankS6 = [];
+        for(let i=0; i<20; i++) {
+            let r1 = Math.floor(Math.random()*4)+1; let r2 = Math.floor(Math.random()*4)+1;
+            let h1 = Math.floor(Math.random()*4)+1; let h2 = Math.floor(Math.random()*4)+1;
+            let p1 = Math.floor(Math.random()*4)+1; let p2 = Math.floor(Math.random()*4)+1;
+            let s1 = Math.floor(Math.random()*4)+1; let s2 = Math.floor(Math.random()*4)+1;
+            bankS6.push({
+                n1Digits: [r1, h1, p1, s1], n2Digits: [r2, h2, p2, s2],
+                n1Full: parseInt(`${r1}${h1}${p1}${s1}`), n2Full: parseInt(`${r2}${h2}${p2}${s2}`),
+                ansDigits: [r1+r2, h1+h2, p1+p2, s1+s2], finalAns: parseInt(`${r1}${h1}${p1}${s1}`) + parseInt(`${r2}${h2}${p2}${s2}`)
+            });
+        }
+        let idxS6 = 0;
+        function genS6() {
+            idxS6 = (idxS6 + 1) % bankS6.length; let item = bankS6[idxS6];
+            document.getElementById('s6_mendatar_quest').innerText = `${item.n1Full} + ${item.n2Full} = `;
+            document.getElementById('s6_mendatar_ans').value = ''; document.getElementById('s6_mendatar_ans').className = '';
+            for(let r=1; r<=2; r++) { for(let c=1; c<=4; c++) { let wInput = document.getElementById(`s6_w_${r}_${c}`); wInput.value = ''; wInput.className = 'digit-grid-input'; } }
+            for(let d=1; d<=4; d++) { let aInput = document.getElementById(`s6_ans_${d}`); aInput.value = ''; aInput.className = 'digit-grid-input'; }
+            document.getElementById('s6_count').innerText = idxS6 + 1;
+        }
+        function checkS6() {
+            let item = bankS6[idxS6]; let allCorrect = true;
+            let mendatarVal = parseInt(document.getElementById('s6_mendatar_ans').value);
+            let mInput = document.getElementById('s6_mendatar_ans');
+            if(mendatarVal === item.finalAns) { mInput.className = 'correct'; } else { mInput.className = 'wrong'; allCorrect = false; }
+            for(let c=1; c<=4; c++) {
+                let val = parseInt(document.getElementById(`s6_w_1_${c}`).value); let el = document.getElementById(`s6_w_1_${c}`);
+                if(val === item.n1Digits[c-1]) el.className = 'digit-grid-input correct'; else { el.className = 'digit-grid-input wrong'; allCorrect = false; }
+            }
+            for(let c=1; c<=4; c++) {
+                let val = parseInt(document.getElementById(`s6_w_2_${c}`).value); let el = document.getElementById(`s6_w_2_${c}`);
+                if(val === item.n2Digits[c-1]) el.className = 'digit-grid-input correct'; else { el.className = 'digit-grid-input wrong'; allCorrect = false; }
+            }
+            for(let d=1; d<=4; d++) {
+                let val = parseInt(document.getElementById(`s6_ans_${d}`).value); let el = document.getElementById(`s6_ans_${d}`);
+                if(val === item.ansDigits[d-1]) el.className = 'digit-grid-input correct'; else { el.className = 'digit-grid-input wrong'; allCorrect = false; }
+            }
+            if(allCorrect) speakText(`Luar biasa ${currentStudent}`);
+        }
+
+        const bankS7 = [];
+        for(let i=0; i<20; i++) {
+            let r1 = Math.floor(Math.random()*4)+5; let r2 = Math.floor(Math.random()*4)+1;
+            let h1 = Math.floor(Math.random()*4)+5; let h2 = Math.floor(Math.random()*4)+1;
+            let p1 = Math.floor(Math.random()*4)+5; let p2 = Math.floor(Math.random()*4)+1;
+            let s1 = Math.floor(Math.random()*4)+5; let s2 = Math.floor(Math.random()*4)+1;
+            bankS7.push({
+                n1Digits: [r1, h1, p1, s1], n2Digits: [r2, h2, p2, s2],
+                n1Full: parseInt(`${r1}${h1}${p1}${s1}`), n2Full: parseInt(`${r2}${h2}${p2}${s2}`),
+                ansDigits: [r1-r2, h1-h2, p1-p2, s1-s2], finalAns: parseInt(`${r1}${h1}${p1}${s1}`) - parseInt(`${r2}${h2}${p2}${s2}`)
+            });
+        }
+        let idxS7 = 0;
+        function genS7() {
+            idxS7 = (idxS7 + 1) % bankS7.length; let item = bankS7[idxS7];
+            document.getElementById('s7_mendatar_quest').innerText = `${item.n1Full} - ${item.n2Full} = `;
+            document.getElementById('s7_mendatar_ans').value = ''; document.getElementById('s7_mendatar_ans').className = '';
+            for(let r=1; r<=2; r++) { for(let c=1; c<=4; c++) { let wInput = document.getElementById(`s7_w_${r}_${c}`); wInput.value = ''; wInput.className = 'digit-grid-input'; } }
+            for(let d=1; d<=4; d++) { let aInput = document.getElementById(`s7_ans_${d}`); aInput.value = ''; aInput.className = 'digit-grid-input'; }
+            document.getElementById('s7_count').innerText = idxS7 + 1;
+        }
+        function checkS7() {
+            let item = bankS7[idxS7]; let allCorrect = true;
+            let mendatarVal = parseInt(document.getElementById('s7_mendatar_ans').value);
+            let mInput = document.getElementById('s7_mendatar_ans');
+            if(mendatarVal === item.finalAns) { mInput.className = 'correct'; } else { mInput.className = 'wrong'; allCorrect = false; }
+            for(let c=1; c<=4; c++) {
+                let val = parseInt(document.getElementById(`s7_w_1_${c}`).value); let el = document.getElementById(`s7_w_1_${c}`);
+                if(val === item.n1Digits[c-1]) el.className = 'digit-grid-input correct'; else { el.className = 'digit-grid-input wrong'; allCorrect = false; }
+            }
+            for(let c=1; c<=4; c++) {
+                let val = parseInt(document.getElementById(`s7_w_2_${c}`).value); let el = document.getElementById(`s7_w_2_${c}`);
+                if(val === item.n2Digits[c-1]) el.className = 'digit-grid-input correct'; else { el.className = 'digit-grid-input wrong'; allCorrect = false; }
+            }
+            for(let d=1; d<=4; d++) {
+                let val = parseInt(document.getElementById(`s7_ans_${d}`).value); let el = document.getElementById(`s7_ans_${d}`);
+                if(val === item.ansDigits[d-1]) el.className = 'digit-grid-input correct'; else { el.className = 'digit-grid-input wrong'; allCorrect = false; }
+            }
+            if(allCorrect) speakText(`Kerja bagus ${currentStudent}`);
+        }
+
+        // Slide Soal Cerita Tunggal
+        const bankS8 = [
+            {story: "Ali memetik 145 buah mangga. Kemarin ia sudah memetik 120 buah mangga. Berapa buah total mangga yang sudah dipetik Ali seluruhnya?", a: 265, ex: "145 + 120 = 265 buah."},
+            {story: "Di perpustakaan sekolah terdapat 312 buku cerita. Kepala sekolah menyumbang 145 buku cerita baru lagi. Berapa total buku cerita sekarang?", a: 457, ex: "312 + 145 = 457 buku."}
+        ];
+        for(let i=bankS8.length; i<10; i++) {
+            let v1 = 100 + i*15; let v2 = 50 + i*5;
+            bankS8.push({story: `Paman memelihara ${v1} ekor anak ayam. Esoknya ia membeli lagi ${v2} ekor anak ayam. Berapa jumlah ayam paman kini?`, a: v1+v2, ex: `${v1} + ${v2} = ${v1+v2}`});
+        }
+        let idxS8 = 0; function genS8() { idxS8 = (idxS8 + 1) % bankS8.length; document.getElementById('s8_story').innerText = bankS8[idxS8].story; document.getElementById('s8_ans').value = ''; document.getElementById('s8_ans').className = ''; document.getElementById('s8_expl').style.display = 'none'; document.getElementById('s8_count').innerText = idxS8 + 1; }
+        function checkS8() { let ans = parseInt(document.getElementById('s8_ans').value); let input = document.getElementById('s8_ans'); if(ans === bankS8[idxS8].a) { input.className = 'correct'; speakText(`Hebat ${currentStudent}`); } else { input.className = 'wrong'; } }
+
+        const bankS9 = [
+            {story: "Kakek memanen 580 buah semangka. Setelah diperiksa, ternyata ada 140 buah semangka yang busuk. Berapa buah semangka kakek yang masih bagus?", a: 440, ex: "580 - 140 = 440 buah."},
+            {story: "Sebuah bus membawa 85 penumpang. Di halte kota, sebanyak 32 penumpang turun dari bus. Berapa sisa penumpang di dalam bus sekarang?", a: 53, ex: "85 - 32 = 53 penumpang."}
+        ];
+        for(let i=bankS9.length; i<10; i++) {
+            let v1 = 400 + i*20; let v2 = 100 + i*8;
+            bankS9.push({story: `Sebuah toko buku memiliki persediaan ${v1} buah buku paket matematika. Sebanyak ${v2} buku dikirim ke sekolah dasar terdekat. Berapa sisa buku di toko?`, a: v1-v2, ex: `${v1} - ${v2} = ${v1-v2}`});
+        }
+        let idxS9 = 0; function genS9() { idxS9 = (idxS9 + 1) % bankS9.length; document.getElementById('s9_story').innerText = bankS9[idxS9].story; document.getElementById('s9_ans').value = ''; document.getElementById('s9_ans').className = ''; document.getElementById('s9_expl').style.display = 'none'; document.getElementById('s9_count').innerText = idxS9 + 1; }
+        function checkS9() { let ans = parseInt(document.getElementById('s9_ans').value); let input = document.getElementById('s9_ans'); if(ans === bankS9[idxS9].a) { input.className = 'correct'; speakText(`Keren ${currentStudent}`); } else { input.className = 'wrong'; } }
+
+        // ================= SLIDE 11: 10 SOAL KONTEKSTUAL =================
+        const disneyAnswers = [165, 65, 140, 105, 160, 290, 220, 55, 300, 400];
+        function initDisneyStoryInteractive() {
+            let container = document.getElementById('disney_story_container');
+            container.innerHTML = `
+                <div class="story-paragraph">
+                    🏰 <b>Bagian 1: Persiapan Buah & Kursi Taman</b><br>
+                    Pagi hari yang cerah di Istana, Cinderella bersama para tikus sedang sibuk menyiapkan pesta kebun kerajaan. Tikus Jaq awalnya menaruh 120 gelas sirup manis di atas meja panjang. Tak lama kemudian, Gus menyelinap membawa tambahan 45 gelas sirup lagi agar semua kebagian. Maka, total sirup yang tersaji di meja sekarang ada sebanyak 
+                    <input type="number" id="ds_0" class="inline-story-input"> <button class="inline-check-btn" onclick="checkInlineDisney(0)">Cek</button> gelas.
+                </div>
+
+                <div class="story-paragraph">
+                    🐱 <b>Bagian 2: Kenakalan Kucing Asep</b><br>
+                    Melihat kesibukan itu, datanglah Kucing Asep dengan wajah jahilnya! Di lemari istana, Cinderella sebenarnya sudah menyusun rapi 85 pasang sepatu pesta perak yang berkilauan. Namun dengan cakar nakalnya, Asep mendorong dan menyembunyikan 20 pasang sepatu ke dalam kolong gubuk. Sepatu pesta yang masih tertinggal rapi di dalam lemari tinggal 
+                    <input type="number" id="ds_1" class="inline-story-input"> <button class="inline-check-btn" onclick="checkInlineDisney(1)">Cek</button> pasang.
+                </div>
+
+                <div class="story-paragraph">
+                    ✨ <b>Bagian 3: Labu Sihir Ibu Peri</b><br>
+                    Ibu Peri datang membantu membawa dekorasi magis! Melalui ketukan tongkat sihirnya, ia mendatangkan 250 buah labu emas berukuran raksasa. Setelah ditata keliling taman, sebanyak 110 labu langsung digunakan sebagai hiasan lampu lampion gantung. Kini, sisa labu emas Ibu Peri yang belum terpakai adalah 
+                    <input type="number" id="ds_2" class="inline-story-input"> <button class="inline-check-btn" onclick="checkInlineDisney(2)">Cek</button> buah.
+                </div>
+
+                <div class="story-paragraph">
+                    🧵 <b>Bagian 4: Menjahit Gaun Pengiring</b><br>
+                    Para tikus penjahit tak mau kalah bersiap. They managed to sew 75 gaun mini berwarna merah muda untuk para burung berkicau. Karena waktu pesta makin mepet, Cinderella turun tangan ikut menjahitkan tambahan 30 gaun mini lagi. Total gaun mini pengiring yang berhasil dibuat adalah 
+                    <input type="number" id="ds_3" class="inline-story-input"> <button class="inline-check-btn" onclick="checkInlineDisney(3)">Cek</button> gaun.
+                </div>
+
+                <div class="story-paragraph">
+                    🌹 <b>Bagian 5: Bunga Mawar yang Layu</b><br>
+                    Pangeran memesan 300 tangkai bunga mawar merah segar untuk menghiasi panggung dansa utama. Sialnya, gara-gara disenggol lagi oleh ekor Kucing Asep hingga dehidrasi, sebanyak 140 tangkai mawar menjadi layu sebelum dipasang. Jumlah mawar merah segar yang masih bagus untuk dekorasi panggung adalah 
+                    <input type="number" id="ds_4" class="inline-story-input"> <button class="inline-check-btn" onclick="checkInlineDisney(4)">Cek</button> tangkai.
+                </div>
+
+                <div class="story-paragraph">
+                    🕯️ <b>Bagian 6: Kilau Lilin Kristal</b><br>
+                    Agar pesta kebun dimalam hari terlihat romantis, pelayan menaruh 180 lilin kristal di atas meja bundar. Merasa pencahayaan kurang terang, kepala pelayan menyalakan lagi 110 lilin kristal tambahan di sudut-sudut lorong taman. Total lilin kristal yang menyala terang benderang menerangi istana adalah 
+                    <input type="number" id="ds_5" class="inline-story-input"> <button class="inline-check-btn" onclick="checkInlineDisney(5)">Cek</button> lilin.
+                </div>
+
+                <div class="story-paragraph">
+                    👥 <b>Bagian 7: Kedatangan Para Tamu Undangan</b><br>
+                    Cinderella menyebarkan undangan untuk 450 tamu dari seluruh penjuru Fajar Negeri. Saat lonceng gerbang pertama berbunyi, baru 230 tamu yang terlihat memasuki area istana. Cinderella harus menunggu kedatangan sisa tamu undangan lainnya sebanyak 
+                    <input type="number" id="ds_6" class="inline-story-input"> <button class="inline-check-btn" onclick="checkInlineDisney(6)">Cek</button> orang lagi.
+                </div>
+
+                <div class="story-paragraph">
+                    💎 <b>Bagian 8: Butir Mutiara yang Hilang</b><br>
+                    Tikus Gus menemukan untaian kalung berisi 90 butir mutiara di lantai dansa. Ketika ia mencoba mengangkatnya, benang kalungnya putus akibat dikejar oleh Kucing Asep, membuat 35 butir mutiara menggelinding hilang masuk ke lubang tikus. Sisa mutiara yang berhasil diselamatkan Gus di tangannya tinggal 
+                    <input type="number" id="ds_7" class="inline-story-input"> <button class="inline-check-btn" onclick="checkInlineDisney(7)">Cek</button> butir.
+                </div>
+
+                <div class="story-paragraph">
+                    ⭐ <b>Bagian 9: Sihir Bintang Gemerlap</b><br>
+                    Ibu Peri mengayunkan tongkatnya ke langit, memantulkan 150 sihir bintang berkilau di atas pohon mangga istana. Belum puas dengan keindahannya, ia menambah ledakan sihir sejenis sebanyak 150 sihir bintang lagi. Sekarang langit pesta malam bertabur sebanyak 
+                    <input type="number" id="ds_8" class="inline-story-input"> <button class="inline-check-btn" onclick="checkInlineDisney(8)">Cek</button> kilatan sihir bintang.
+                </div>
+
+                <div class="story-paragraph">
+                    🐴 <b>Bagian 10: Jarak Kereta Kencana</b><br>
+                    Kereta kencana labu yang membawa Cinderella melaju sejauh 280 meter melewati jembatan utama kerajaan. Sesaat setelah melewati pos penjaga, kuda putihnya melaju lagi sejauh 120 meter menuju pintu masuk taman pesta kebun. Total jarak perjalanan yang ditempuh kereta kencana ajaib itu adalah 
+                    <input type="number" id="ds_9" class="inline-story-input"> <button class="inline-check-btn" onclick="checkInlineDisney(9)">Cek</button> meter.<br><br>
+                    🎉 <i>Hore! Berkat bantuanmu menghitung semua perlengkapan, pesta kebun Cinderella berjalan sukses dan aman dari gangguan Kucing Asep!</i>
+                </div>
+            `;
+        }
+
+        function checkInlineDisney(idx) {
+            let inputEl = document.getElementById(`ds_${idx}`);
+            let val = parseInt(inputEl.value);
+            if (val === disneyAnswers[idx]) { inputEl.className = 'inline-story-input correct'; speakText(`Hebat ${currentStudent}!`); } 
+            else { inputEl.className = 'inline-story-input wrong'; speakText("Kurang tepat, ayo teliti kembali."); }
+        }
+
+        // BGM AUDIO
+        let audioCtx = null; let bgmNode = null; let gainNode = null; let isBgmPlaying = false;
+        function toggleFairytaleBgm() {
+            if(!audioCtx) { audioCtx = new (window.AudioContext || window.webkitAudioContext)(); }
+            if(!isBgmPlaying) {
+                gainNode = audioCtx.createGain(); gainNode.gain.setValueAtTime(0.03, audioCtx.currentTime);
+                let osc = audioCtx.createOscillator(); osc.type = 'triangle'; osc.frequency.setValueAtTime(293.66, audioCtx.currentTime);
+                osc.connect(gainNode); gainNode.connect(audioCtx.destination); osc.start(); bgmNode = osc; isBgmPlaying = true;
+                adjustBgmVolume(document.getElementById('bgm_vol').value);
+            } else { stopBgm(); }
+        }
+        function adjustBgmVolume(vol) { if(gainNode) { gainNode.gain.setValueAtTime((vol / 100) * 0.08, audioCtx.currentTime); } }
+        function stopBgm() { if(bgmNode) { try { bgmNode.stop(); }catch(e){} bgmNode = null; isBgmPlaying = false; } }
+
+        // GAME ARENA BATTLE DECK
+        const deckQuestions = [
+            {q: "Rudi mengumpulkan 140 koin emas game, lalu digunakan membelikan kapak besi seharga 60 koin. Berapa sisa koin Rudi?", a: 80},
+            {q: "Di peternakan ada 230 kambing hitam. Siang hari lahir anak kambing baru sebanyak 45 ekor. Berapa total kambing?", a: 275},
+            {q: "Siti membawa 350 lembar kertas lipat warna-warni, dibagikan ke teman kelasnya sebanyak 150 lembar. Sisa kertas?", a: 200},
+            {q: "Sebuah kapal mengangkut 400 kotak paket. Di dermaga pertama diturunkan 120 kotak paket. Berapa sisa paket?", a: 280},
+            {q: "Ibu memotong 120 iris bolu pandan dan 180 iris bolu cokelat untuk kudapan arisan. Berapa total iris bolu kue Ibu?", a: 300},
+            {q: "Di taman kota mekar 210 bunga tulip kuning dan 140 bunga tulip merah merona. Berapa jumlah tulip seluruhnya?", a: 350},
+            {q: "Seorang pedagang membeli 500 butir telur ayam ras, pecah di jalan karena guncangan roda sebanyak 65 butir. Sisa telur?", a: 435},
+            {q: "Fahmi memiliki koleksi 260 kartu robot jagoan. Kakaknya menghadiahkan lagi 140 kartu baru. Berapa total kartu?", a: 400},
+            {q: "Sebuah perpustakaan memiliki koleksi 680 komik. Dipinjam anak-anak sore ini sebanyak 180 komik. Berapa sisa komik?", a: 500},
+            {q: "Pak Bambang memanen 750 butir kelapa tua, dijual borongan ke pasar sayur sebanyak 400 butir. Berapa kelapa tersisa?", a: 350}
+        ];
+        let currentDeckIdx = -1; let studentScore = 0; let deckCountdown; let deckTimeLeft = 120;
+
+        function initBattleDeck() {
+            let container = document.getElementById('battle_deck_container'); let html = "";
+            for(let i=0; i<10; i++) { html += `<div class="close-card" id="ccard_${i}" onclick="openDeckCard(${i})">${i+1}</div>`; }
+            container.innerHTML = html;
+        }
+        function openDeckCard(idx) {
+            if(document.getElementById(`ccard_${idx}`).classList.contains('active')) return;
+            currentDeckIdx = idx;
+            document.getElementById('deck_title').innerText = `Misi Rahasia Kartu ${idx+1}`;
+            document.getElementById('deck_quest_text').innerText = deckQuestions[idx].q;
+            document.getElementById('deck_ans').value = ''; document.getElementById('deck_ans').className = '';
+            clearInterval(deckCountdown); deckTimeLeft = 120; startDeckTimer();
+        }
+        function startDeckTimer() {
+            updateDeckTimerDisplay();
+            deckCountdown = setInterval(() => {
+                if(deckTimeLeft <= 0) { clearInterval(deckCountdown); document.getElementById('deck_timer').innerText = "00:00"; document.getElementById('deck_quest_text').innerText = "Waktu habis!"; } 
+                else { deckTimeLeft--; updateDeckTimerDisplay(); }
+            }, 1000);
+        }
+        function updateDeckTimerDisplay() {
+            let min = Math.floor(deckTimeLeft / 60).toString().padStart(2, '0'); let sec = (deckTimeLeft % 60).toString().padStart(2, '0');
+            document.getElementById('deck_timer').innerText = `${min}:${sec}`;
+        }
+        function stopDeckTimer() { clearInterval(deckCountdown); }
+        function checkDeckAnswer() {
+            if(currentDeckIdx === -1) return;
+            let val = parseInt(document.getElementById('deck_ans').value);
+            if(val === deckQuestions[currentDeckIdx].a) {
+                document.getElementById('deck_ans').className = 'correct'; document.getElementById(`ccard_${currentDeckIdx}`).classList.add('active');
+                studentScore++; document.getElementById('student_score_val').innerText = studentScore;
+                speakText("Tepat sekali!"); clearInterval(deckCountdown); document.getElementById('deck_timer').innerText = "SUCCESS";
+            } else { document.getElementById('deck_ans').className = 'wrong'; }
+        }
+        function announceFinalScore() { speakText(`Selamat ${currentStudent}, total skormu adalah ${studentScore} poin!`); }
+
+        window.onload = () => {
+            genS3(); genS4(); genS6(); genS7(); genS8(); genS9();
+            initDisneyStoryInteractive(); initBattleDeck();
+        }
+    </script>
+</body>
+</html>
