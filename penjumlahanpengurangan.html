@@ -1,0 +1,2421 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Petualangan Matematika Duo — Operasi Hitung</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&family=Baloo+2:wght@500;600;700;800&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #FFF8E7;
+  --bg-alt: #FFEBC8;
+  --paper: #FFFFFF;
+  --ink: #2D1B4E;
+  --ink-soft: #5A4A7A;
+  --muted: #9A8DB5;
+  --p1: #FF6B6B;
+  --p1-soft: #FFE5E5;
+  --p1-dark: #C93838;
+  --p2: #4ECDC4;
+  --p2-soft: #DFF7F4;
+  --p2-dark: #2A9D94;
+  --y: #FFD93D;
+  --y-dark: #E6B800;
+  --g: #6BCB77;
+  --g-dark: #3D9148;
+  --o: #FF9F45;
+  --o-dark: #D97400;
+  --p: #B983FF;
+  --p-dark: #7C3AED;
+  --shadow: rgba(45, 27, 78, 0.15);
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+html, body {
+  height: 100%;
+  overflow: hidden;
+  font-family: 'Nunito', sans-serif;
+  color: var(--ink);
+  background: var(--bg);
+}
+
+body::before {
+  content: '';
+  position: fixed; inset: 0;
+  background-image:
+    radial-gradient(circle at 10% 20%, rgba(255,107,107,0.08), transparent 40%),
+    radial-gradient(circle at 90% 80%, rgba(78,205,196,0.08), transparent 40%),
+    radial-gradient(circle at 50% 50%, rgba(255,217,61,0.06), transparent 60%);
+  pointer-events: none;
+  z-index: 1;
+}
+
+.float-bg {
+  position: fixed; inset: 0;
+  z-index: 2; pointer-events: none; overflow: hidden;
+}
+.float-item {
+  position: absolute;
+  font-family: 'Baloo 2', cursive;
+  font-weight: 800;
+  opacity: 0.08;
+  animation: floatUp linear infinite;
+  user-select: none;
+}
+@keyframes floatUp {
+  0% { transform: translateY(110vh) rotate(0deg); }
+  100% { transform: translateY(-20vh) rotate(360deg); }
+}
+
+.progress-bar {
+  position: fixed; top: 0; left: 0;
+  height: 6px;
+  background: linear-gradient(90deg, var(--p1), var(--y), var(--g), var(--p2), var(--p));
+  z-index: 100;
+  transition: width 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+  border-radius: 0 6px 6px 0;
+}
+
+header {
+  position: fixed; top: 0; left: 0; right: 0;
+  padding: 14px 28px;
+  display: flex; justify-content: space-between; align-items: center;
+  z-index: 50; pointer-events: none;
+  background: linear-gradient(to bottom, var(--bg) 70%, transparent);
+}
+.logo {
+  display: flex; align-items: center; gap: 10px;
+  font-family: 'Baloo 2', cursive;
+  font-weight: 800; font-size: 18px;
+  pointer-events: auto;
+}
+.logo-icon {
+  width: 40px; height: 40px;
+  background: linear-gradient(135deg, var(--p1), var(--o));
+  color: white;
+  border-radius: 12px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 22px; font-weight: 800;
+  font-family: 'Baloo 2', cursive;
+  box-shadow: 0 4px 0 var(--p1-dark);
+  transform: rotate(-5deg);
+  animation: logoBounce 3s ease-in-out infinite;
+}
+@keyframes logoBounce {
+  0%, 100% { transform: rotate(-5deg) translateY(0); }
+  50% { transform: rotate(5deg) translateY(-3px); }
+}
+.slide-counter {
+  font-family: 'Baloo 2', cursive;
+  font-weight: 700; font-size: 14px;
+  background: white;
+  padding: 8px 16px;
+  border-radius: 20px;
+  box-shadow: 0 3px 0 var(--ink);
+  border: 2px solid var(--ink);
+  pointer-events: auto;
+}
+.slide-counter span { color: var(--p1); font-size: 18px; }
+
+.player-tags {
+  position: fixed; top: 14px; left: 50%;
+  transform: translateX(-50%);
+  display: flex; gap: 10px;
+  z-index: 50;
+  pointer-events: none;
+}
+.ptag {
+  display: flex; align-items: center; gap: 8px;
+  background: white;
+  padding: 6px 14px;
+  border-radius: 20px;
+  border: 2px solid var(--ink);
+  box-shadow: 0 3px 0 var(--ink);
+  font-family: 'Baloo 2', cursive;
+  font-weight: 700;
+  font-size: 13px;
+  pointer-events: auto;
+}
+.ptag.p1 { color: var(--p1-dark); }
+.ptag.p2 { color: var(--p2-dark); }
+.ptag-avatar {
+  width: 26px; height: 26px;
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 14px;
+  color: white;
+}
+.ptag.p1 .ptag-avatar { background: var(--p1); }
+.ptag.p2 .ptag-avatar { background: var(--p2); }
+.ptag-score {
+  background: var(--y);
+  padding: 2px 8px;
+  border-radius: 10px;
+  font-size: 12px;
+  color: var(--ink);
+}
+
+.slides-container {
+  position: relative;
+  height: 100vh; width: 100vw;
+  z-index: 10;
+}
+.slide {
+  position: absolute; top: 0; left: 0;
+  width: 100%; height: 100%;
+  padding: 72px 28px 80px;
+  display: flex; flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  opacity: 0; transform: translateX(60px);
+  transition: opacity 0.5s ease, transform 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+  pointer-events: none;
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+.slide.active { opacity: 1; transform: translateX(0); pointer-events: auto; }
+.slide.prev { transform: translateX(-60px); }
+.slide::-webkit-scrollbar { width: 8px; }
+.slide::-webkit-scrollbar-track { background: transparent; }
+.slide::-webkit-scrollbar-thumb { background: var(--muted); border-radius: 8px; }
+
+.slide-inner {
+  margin: auto 0;
+  width: 100%;
+  max-width: 1280px;
+  padding: 8px 0;
+}
+
+.nav-controls {
+  position: fixed; bottom: 18px; left: 50%;
+  transform: translateX(-50%);
+  display: flex; gap: 12px; align-items: center;
+  z-index: 100;
+  background: white;
+  padding: 8px 16px;
+  border-radius: 50px;
+  border: 2px solid var(--ink);
+  box-shadow: 0 4px 0 var(--ink), 0 8px 20px var(--shadow);
+}
+.nav-btn {
+  width: 38px; height: 38px;
+  border-radius: 50%;
+  border: 2px solid var(--ink);
+  background: var(--y);
+  color: var(--ink);
+  cursor: pointer; font-size: 18px;
+  display: flex; align-items: center; justify-content: center;
+  transition: all 0.2s;
+  font-weight: 800;
+  font-family: 'Baloo 2', cursive;
+}
+.nav-btn:hover:not(:disabled) {
+  background: var(--p1);
+  color: white;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 0 var(--ink);
+}
+.nav-btn:disabled { opacity: 0.35; cursor: not-allowed; }
+.nav-dots { display: flex; gap: 6px; padding: 0 6px; }
+.dot {
+  width: 12px; height: 12px;
+  border-radius: 50%;
+  background: var(--bg-alt);
+  border: 2px solid var(--ink);
+  cursor: pointer;
+  transition: all 0.3s;
+}
+.dot.active {
+  background: var(--p1);
+  transform: scale(1.3);
+}
+
+/* === TITLES === */
+.slide-title {
+  font-family: 'Baloo 2', cursive;
+  font-weight: 800;
+  font-size: clamp(32px, 4.5vw, 56px);
+  line-height: 1;
+  margin-bottom: 6px;
+  letter-spacing: -1px;
+  text-align: center;
+}
+.slide-title .accent {
+  color: var(--p1);
+  position: relative;
+  display: inline-block;
+}
+.slide-title .accent::after {
+  content: '';
+  position: absolute;
+  bottom: 4px; left: -4px; right: -4px;
+  height: 12px;
+  background: var(--y);
+  z-index: -1;
+  border-radius: 6px;
+  transform: skewX(-8deg);
+}
+.slide-subtitle {
+  font-family: 'Fredoka', sans-serif;
+  font-size: 16px;
+  color: var(--ink-soft);
+  margin-bottom: 24px;
+  text-align: center;
+}
+
+/* === SLIDE 1: COVER === */
+.cover { text-align: center; position: relative; }
+.cover-tag {
+  display: inline-block;
+  background: var(--g);
+  color: white;
+  padding: 8px 20px;
+  border-radius: 24px;
+  font-family: 'Baloo 2', cursive;
+  font-weight: 700; font-size: 12px;
+  letter-spacing: 2px; text-transform: uppercase;
+  margin-bottom: 20px;
+  box-shadow: 0 4px 0 var(--g-dark);
+  transform: rotate(-2deg);
+  animation: tagWiggle 4s ease-in-out infinite;
+}
+@keyframes tagWiggle {
+  0%, 100% { transform: rotate(-2deg); }
+  50% { transform: rotate(2deg); }
+}
+.cover h1 {
+  font-family: 'Baloo 2', cursive;
+  font-weight: 800;
+  font-size: clamp(40px, 6vw, 88px);
+  line-height: 0.95;
+  margin-bottom: 12px;
+  letter-spacing: -2px;
+}
+.cover h1 .accent { color: var(--p1); }
+.cover h1 .accent2 { color: var(--p2); }
+.cover-subtitle {
+  font-family: 'Fredoka', sans-serif;
+  font-size: 18px;
+  color: var(--ink-soft);
+  margin: 14px 0 28px;
+}
+
+.name-inputs {
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  gap: 16px;
+  align-items: center;
+  max-width: 800px;
+  margin: 0 auto 20px;
+}
+.name-card {
+  background: white;
+  border: 3px solid var(--ink);
+  border-radius: 20px;
+  padding: 18px;
+  box-shadow: 0 6px 0 var(--ink);
+  position: relative;
+}
+.name-card.p1 { border-color: var(--p1-dark); box-shadow: 0 6px 0 var(--p1-dark); }
+.name-card.p2 { border-color: var(--p2-dark); box-shadow: 0 6px 0 var(--p2-dark); }
+.name-card .avatar {
+  width: 64px; height: 64px;
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 36px;
+  color: white;
+  margin: 0 auto 10px;
+  font-family: 'Baloo 2', cursive;
+  font-weight: 800;
+  animation: avatarBounce 2s ease-in-out infinite;
+}
+.name-card.p1 .avatar { background: var(--p1); }
+.name-card.p2 .avatar { background: var(--p2); }
+@keyframes avatarBounce {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-6px); }
+}
+.name-card h3 {
+  font-family: 'Baloo 2', cursive;
+  font-size: 18px;
+  margin-bottom: 6px;
+}
+.name-card.p1 h3 { color: var(--p1-dark); }
+.name-card.p2 h3 { color: var(--p2-dark); }
+.name-card input {
+  width: 100%;
+  border: 2px solid var(--ink);
+  border-radius: 12px;
+  padding: 10px 14px;
+  font-family: 'Baloo 2', cursive;
+  font-weight: 600;
+  font-size: 18px;
+  text-align: center;
+  color: var(--ink);
+  background: var(--bg-alt);
+}
+.name-card input:focus { outline: none; background: white; }
+.name-card.p1 input:focus { border-color: var(--p1); }
+.name-card.p2 input:focus { border-color: var(--p2); }
+.vs-badge {
+  font-family: 'Baloo 2', cursive;
+  font-weight: 800;
+  font-size: 28px;
+  color: var(--o);
+  background: white;
+  width: 56px; height: 56px;
+  border-radius: 50%;
+  border: 3px solid var(--ink);
+  box-shadow: 0 4px 0 var(--ink);
+  display: flex; align-items: center; justify-content: center;
+  transform: rotate(-10deg);
+  animation: vsSpin 4s ease-in-out infinite;
+}
+@keyframes vsSpin {
+  0%, 100% { transform: rotate(-10deg) scale(1); }
+  50% { transform: rotate(10deg) scale(1.1); }
+}
+
+.start-btn {
+  background: var(--g);
+  color: white;
+  border: 3px solid var(--ink);
+  padding: 14px 36px;
+  border-radius: 18px;
+  font-family: 'Baloo 2', cursive;
+  font-weight: 800;
+  font-size: 22px;
+  cursor: pointer;
+  box-shadow: 0 6px 0 var(--g-dark);
+  transition: all 0.2s;
+  margin-top: 12px;
+}
+.start-btn:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 9px 0 var(--g-dark);
+}
+.start-btn:active {
+  transform: translateY(2px);
+  box-shadow: 0 2px 0 var(--g-dark);
+}
+
+.cover-deco {
+  position: absolute;
+  font-size: 56px;
+  pointer-events: none;
+  animation: floatDeco 5s ease-in-out infinite;
+}
+.deco-1 { top: -10px; left: 5%; color: var(--p1); animation-delay: 0s; }
+.deco-2 { top: 30px; right: 5%; color: var(--p2); animation-delay: 1s; }
+.deco-3 { bottom: 20px; left: 8%; color: var(--y); animation-delay: 2s; }
+.deco-4 { bottom: 60px; right: 8%; color: var(--p); animation-delay: 1.5s; }
+@keyframes floatDeco {
+  0%, 100% { transform: translateY(0) rotate(0); }
+  50% { transform: translateY(-15px) rotate(15deg); }
+}
+
+/* === CARDS === */
+.grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+.grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; }
+.grid-4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; }
+.grid-auto { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 14px; }
+
+.card {
+  background: white;
+  border: 3px solid var(--ink);
+  border-radius: 18px;
+  padding: 18px;
+  box-shadow: 0 5px 0 var(--ink);
+  transition: all 0.3s;
+  position: relative;
+}
+.card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 8px 0 var(--ink);
+}
+.card-num {
+  position: absolute;
+  top: -14px; left: 16px;
+  background: var(--p1);
+  color: white;
+  width: 34px; height: 34px;
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-family: 'Baloo 2', cursive;
+  font-weight: 800; font-size: 16px;
+  border: 2px solid var(--ink);
+  box-shadow: 0 3px 0 var(--ink);
+}
+.card h3 {
+  font-family: 'Baloo 2', cursive;
+  font-weight: 700;
+  font-size: 18px;
+  margin: 8px 0 6px;
+}
+.card p {
+  font-size: 14px;
+  color: var(--ink-soft);
+  line-height: 1.5;
+}
+.card .icon {
+  font-size: 32px;
+  display: inline-block;
+}
+
+/* === OBJECTIVES === */
+.obj-card { background: white; }
+.obj-card:nth-child(1) .card-num { background: var(--p1); }
+.obj-card:nth-child(2) .card-num { background: var(--o); }
+.obj-card:nth-child(3) .card-num { background: var(--g); }
+
+/* === MATERI === */
+.ops-tabs {
+  display: flex;
+  gap: 8px;
+  justify-content: center;
+  margin-bottom: 20px;
+  flex-wrap: wrap;
+}
+.ops-tab {
+  background: white;
+  border: 3px solid var(--ink);
+  padding: 10px 18px;
+  border-radius: 14px;
+  font-family: 'Baloo 2', cursive;
+  font-weight: 700;
+  font-size: 15px;
+  cursor: pointer;
+  transition: all 0.2s;
+  box-shadow: 0 3px 0 var(--ink);
+  display: flex; align-items: center; gap: 8px;
+}
+.ops-tab:hover { transform: translateY(-2px); box-shadow: 0 5px 0 var(--ink); }
+.ops-tab.active { color: white; }
+.ops-tab[data-ops="add"].active { background: var(--p1); box-shadow: 0 3px 0 var(--p1-dark); }
+.ops-tab[data-ops="sub"].active { background: var(--o); box-shadow: 0 3px 0 var(--o-dark); }
+.ops-tab[data-ops="mul"].active { background: var(--g); box-shadow: 0 3px 0 var(--g-dark); }
+.ops-tab[data-ops="div"].active { background: var(--p); box-shadow: 0 3px 0 var(--p-dark); }
+.ops-symbol {
+  width: 28px; height: 28px;
+  border-radius: 8px;
+  display: inline-flex; align-items: center; justify-content: center;
+  color: white;
+  font-size: 16px;
+  font-weight: 800;
+}
+.ops-tab[data-ops="add"] .ops-symbol { background: var(--p1); }
+.ops-tab[data-ops="sub"] .ops-symbol { background: var(--o); }
+.ops-tab[data-ops="mul"] .ops-symbol { background: var(--g); }
+.ops-tab[data-ops="div"] .ops-symbol { background: var(--p); }
+
+.ops-content { display: none; }
+.ops-content.active { display: block; animation: fadeIn 0.4s; }
+@keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+
+.ops-panel {
+  background: white;
+  border: 3px solid var(--ink);
+  border-radius: 20px;
+  padding: 24px;
+  box-shadow: 0 5px 0 var(--ink);
+}
+.ops-panel h3 {
+  font-family: 'Baloo 2', cursive;
+  font-weight: 800;
+  font-size: 24px;
+  margin-bottom: 12px;
+  display: flex; align-items: center; gap: 10px;
+}
+.ops-panel h4 {
+  font-family: 'Baloo 2', cursive;
+  font-weight: 700;
+  font-size: 16px;
+  margin: 14px 0 8px;
+  color: var(--ink-soft);
+}
+.ops-panel p { font-size: 14px; line-height: 1.6; color: var(--ink-soft); margin-bottom: 8px; }
+.ops-panel strong { color: var(--ink); }
+
+/* Susun layout */
+.susun-demo {
+  display: flex;
+  gap: 20px;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  margin: 14px 0;
+}
+.susun-calc {
+  font-family: 'JetBrains Mono', 'Courier New', monospace;
+  font-weight: 700;
+  font-size: 22px;
+  background: var(--bg-alt);
+  border: 2px dashed var(--ink);
+  border-radius: 12px;
+  padding: 14px 20px;
+  line-height: 1.5;
+  color: var(--ink);
+}
+.susun-calc .row { display: flex; justify-content: flex-end; gap: 8px; }
+.susun-calc .op-sign { color: var(--p1); margin-right: 6px; }
+.susun-calc .line { border-top: 2px solid var(--ink); padding-top: 4px; margin-top: 2px; min-width: 100px; }
+.susun-calc .carry { font-size: 12px; color: var(--o-dark); vertical-align: super; }
+
+.susun-steps {
+  flex: 1;
+  min-width: 240px;
+}
+.susun-steps ol {
+  padding-left: 20px;
+}
+.susun-steps li {
+  font-size: 14px;
+  color: var(--ink-soft);
+  line-height: 1.6;
+  margin-bottom: 6px;
+}
+.susun-steps li strong { color: var(--ink); }
+
+/* === PRACTICE 2 PLAYERS === */
+.practice-layout {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+.player-panel {
+  background: white;
+  border: 3px solid var(--ink);
+  border-radius: 20px;
+  padding: 16px;
+  box-shadow: 0 5px 0 var(--ink);
+  position: relative;
+}
+.player-panel.p1 { border-color: var(--p1-dark); box-shadow: 0 5px 0 var(--p1-dark); background: var(--p1-soft); }
+.player-panel.p2 { border-color: var(--p2-dark); box-shadow: 0 5px 0 var(--p2-dark); background: var(--p2-soft); }
+.player-header {
+  display: flex; align-items: center; gap: 10px;
+  padding-bottom: 10px;
+  margin-bottom: 12px;
+  border-bottom: 2px dashed rgba(45,27,78,0.2);
+}
+.player-avatar {
+  width: 40px; height: 40px;
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-family: 'Baloo 2', cursive;
+  font-weight: 800;
+  color: white;
+  font-size: 18px;
+}
+.player-panel.p1 .player-avatar { background: var(--p1); }
+.player-panel.p2 .player-avatar { background: var(--p2); }
+.player-name {
+  font-family: 'Baloo 2', cursive;
+  font-weight: 700;
+  font-size: 16px;
+  flex: 1;
+  color: var(--ink);
+}
+.player-progress {
+  background: white;
+  border: 2px solid var(--ink);
+  border-radius: 12px;
+  padding: 4px 10px;
+  font-family: 'Baloo 2', cursive;
+  font-weight: 700;
+  font-size: 13px;
+}
+.player-panel.p1 .player-progress { color: var(--p1-dark); }
+.player-panel.p2 .player-progress { color: var(--p2-dark); }
+
+.q-list {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+  max-height: 56vh;
+  overflow-y: auto;
+  padding-right: 4px;
+}
+.q-list::-webkit-scrollbar { width: 6px; }
+.q-list::-webkit-scrollbar-thumb { background: var(--muted); border-radius: 6px; }
+.q-item {
+  background: white;
+  border: 2px solid var(--ink);
+  border-radius: 12px;
+  padding: 8px 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.q-item.correct { background: rgba(107,203,119,0.2); border-color: var(--g-dark); }
+.q-item.wrong { background: rgba(255,107,107,0.15); border-color: var(--p1-dark); animation: shake 0.4s; }
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  25% { transform: translateX(-3px); }
+  75% { transform: translateX(3px); }
+}
+.q-item-text {
+  font-family: 'Baloo 2', cursive;
+  font-weight: 700;
+  font-size: 14px;
+  color: var(--ink);
+  text-align: center;
+}
+.q-item-row {
+  display: flex; gap: 4px;
+}
+.q-item-input {
+  flex: 1;
+  width: 100%;
+  border: 2px solid var(--ink);
+  border-radius: 8px;
+  padding: 4px 6px;
+  font-family: 'Baloo 2', cursive;
+  font-weight: 700;
+  font-size: 14px;
+  text-align: center;
+  color: var(--ink);
+  background: var(--bg-alt);
+  min-width: 0;
+}
+.q-item-input:focus { outline: none; background: white; border-color: var(--p); }
+.q-item.correct .q-item-input { background: rgba(107,203,119,0.3); }
+.q-item.wrong .q-item-input { background: rgba(255,107,107,0.2); }
+.q-item-check {
+  background: var(--g);
+  color: white;
+  border: 2px solid var(--ink);
+  border-radius: 8px;
+  padding: 4px 8px;
+  font-family: 'Baloo 2', cursive;
+  font-weight: 700;
+  font-size: 12px;
+  cursor: pointer;
+  box-shadow: 0 2px 0 var(--ink);
+}
+.q-item-check:hover { background: var(--g-dark); }
+.q-item-feedback {
+  font-size: 11px;
+  font-weight: 700;
+  text-align: center;
+  display: none;
+}
+.q-item-feedback.show { display: block; }
+.q-item-feedback.correct { color: var(--g-dark); }
+.q-item-feedback.wrong { color: var(--p1-dark); }
+
+/* === MULTIPLICATION TABLE === */
+.mult-section {
+  display: grid;
+  grid-template-columns: 1.2fr 1fr;
+  gap: 18px;
+  margin-top: 12px;
+}
+.mult-table-wrap {
+  background: white;
+  border: 3px solid var(--ink);
+  border-radius: 18px;
+  padding: 14px;
+  box-shadow: 0 5px 0 var(--ink);
+  overflow-x: auto;
+}
+.mult-table {
+  border-collapse: separate;
+  border-spacing: 2px;
+  width: 100%;
+  font-family: 'Baloo 2', cursive;
+  font-weight: 700;
+}
+.mult-table th, .mult-table td {
+  width: 34px; height: 34px;
+  text-align: center;
+  border-radius: 6px;
+  font-size: 13px;
+}
+.mult-table th {
+  background: var(--ink);
+  color: white;
+}
+.mult-table th.row-h { background: var(--p1); }
+.mult-table th.col-h { background: var(--p2); }
+.mult-table th.corner { background: var(--y); color: var(--ink); }
+.mult-table td {
+  background: var(--bg-alt);
+  color: var(--ink);
+  transition: all 0.2s;
+  cursor: pointer;
+}
+.mult-table td:hover {
+  background: var(--y);
+  transform: scale(1.1);
+}
+.mult-table td.highlight-row { background: var(--p1-soft); }
+.mult-table td.highlight-col { background: var(--p2-soft); }
+.mult-table td.highlight-cell {
+  background: var(--g) !important;
+  color: white;
+  transform: scale(1.15);
+  box-shadow: 0 0 10px var(--g);
+}
+.mult-table td.input-cell {
+  background: white;
+  border: 2px solid var(--p);
+}
+.mult-table td.input-cell input {
+  width: 100%; height: 100%;
+  border: none;
+  text-align: center;
+  font-family: 'Baloo 2', cursive;
+  font-weight: 700;
+  font-size: 13px;
+  background: transparent;
+  color: var(--ink);
+}
+.mult-table td.input-cell input:focus { outline: none; background: var(--y-soft); }
+.mult-table td.input-cell.correct { background: rgba(107,203,119,0.3); border-color: var(--g); }
+.mult-table td.input-cell.wrong { background: rgba(255,107,107,0.2); border-color: var(--p1); }
+
+.mult-info {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+.mult-card {
+  background: white;
+  border: 3px solid var(--ink);
+  border-radius: 16px;
+  padding: 16px;
+  box-shadow: 0 4px 0 var(--ink);
+}
+.mult-card h4 {
+  font-family: 'Baloo 2', cursive;
+  font-weight: 700;
+  font-size: 16px;
+  margin-bottom: 10px;
+  color: var(--ink);
+}
+.mult-card p { font-size: 13px; color: var(--ink-soft); line-height: 1.5; margin-bottom: 8px; }
+.mult-inputs {
+  display: flex; gap: 8px; align-items: center; flex-wrap: wrap;
+}
+.mult-inputs input {
+  width: 60px;
+  border: 2px solid var(--ink);
+  border-radius: 10px;
+  padding: 6px;
+  font-family: 'Baloo 2', cursive;
+  font-weight: 700;
+  font-size: 18px;
+  text-align: center;
+  color: var(--ink);
+  background: var(--bg-alt);
+}
+.mult-inputs input:focus { outline: none; background: white; border-color: var(--p); }
+.mult-result {
+  font-family: 'Baloo 2', cursive;
+  font-weight: 800;
+  font-size: 20px;
+  color: var(--g-dark);
+  margin-top: 8px;
+}
+.mult-result span {
+  background: var(--g);
+  color: white;
+  padding: 4px 12px;
+  border-radius: 10px;
+  box-shadow: 0 2px 0 var(--g-dark);
+}
+.howto-step {
+  display: flex; gap: 10px; align-items: center;
+  padding: 8px 0;
+  border-bottom: 1px dashed rgba(0,0,0,0.1);
+}
+.howto-step:last-child { border-bottom: none; }
+.howto-step-num {
+  background: var(--p);
+  color: white;
+  width: 24px; height: 24px;
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-family: 'Baloo 2', cursive;
+  font-weight: 800;
+  font-size: 12px;
+  flex-shrink: 0;
+}
+.howto-step p { font-size: 13px; color: var(--ink-soft); margin: 0; }
+
+.div-demo {
+  background: var(--bg-alt);
+  border: 2px dashed var(--ink);
+  border-radius: 12px;
+  padding: 12px;
+  margin-top: 10px;
+  font-family: 'Baloo 2', cursive;
+  font-weight: 700;
+  font-size: 15px;
+  text-align: center;
+}
+.div-demo .arrow { color: var(--p); font-size: 18px; margin: 0 6px; }
+
+/* === SOAL CERITA === */
+.story-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 14px;
+  margin-top: 12px;
+}
+.story-card {
+  background: white;
+  border: 3px solid var(--ink);
+  border-radius: 18px;
+  padding: 16px;
+  box-shadow: 0 4px 0 var(--ink);
+  display: flex;
+  gap: 14px;
+  align-items: flex-start;
+}
+.story-card .story-icon {
+  font-size: 40px;
+  flex-shrink: 0;
+  background: var(--bg-alt);
+  width: 56px; height: 56px;
+  border-radius: 14px;
+  display: flex; align-items: center; justify-content: center;
+  border: 2px solid var(--ink);
+}
+.story-card .story-body { flex: 1; }
+.story-card h4 {
+  font-family: 'Baloo 2', cursive;
+  font-weight: 700;
+  font-size: 15px;
+  margin-bottom: 6px;
+  color: var(--ink);
+}
+.story-card p { font-size: 13px; color: var(--ink-soft); line-height: 1.5; margin-bottom: 8px; }
+.story-card .story-ops {
+  display: inline-block;
+  padding: 4px 12px;
+  border-radius: 10px;
+  font-family: 'Baloo 2', cursive;
+  font-weight: 700;
+  font-size: 13px;
+  color: white;
+}
+.story-ops.add { background: var(--p1); }
+.story-ops.sub { background: var(--o); }
+.story-ops.mul { background: var(--g); }
+.story-ops.div { background: var(--p); }
+.story-card .story-solution {
+  background: var(--bg-alt);
+  border-radius: 10px;
+  padding: 8px 10px;
+  margin-top: 6px;
+  font-family: 'Baloo 2', cursive;
+  font-weight: 700;
+  font-size: 13px;
+  color: var(--ink);
+}
+
+/* === SOAL CERITA LATIHAN === */
+.story-practice {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+.sp-card {
+  background: white;
+  border: 3px solid var(--ink);
+  border-radius: 18px;
+  padding: 18px;
+  box-shadow: 0 5px 0 var(--ink);
+}
+.sp-card.solved { background: rgba(107,203,119,0.1); }
+.sp-card .sp-num {
+  display: inline-block;
+  background: var(--y);
+  color: var(--ink);
+  width: 30px; height: 30px;
+  border-radius: 50%;
+  text-align: center;
+  line-height: 28px;
+  font-family: 'Baloo 2', cursive;
+  font-weight: 800;
+  font-size: 14px;
+  border: 2px solid var(--ink);
+  margin-bottom: 8px;
+}
+.sp-card .sp-text {
+  font-size: 14px;
+  line-height: 1.6;
+  color: var(--ink);
+  margin-bottom: 12px;
+  font-weight: 600;
+}
+.sp-ops-row {
+  display: flex; gap: 6px;
+  margin-bottom: 12px;
+}
+.sp-ops-btn {
+  width: 48px; height: 48px;
+  border: 3px solid var(--ink);
+  border-radius: 12px;
+  font-family: 'Baloo 2', cursive;
+  font-weight: 800;
+  font-size: 22px;
+  cursor: pointer;
+  transition: all 0.2s;
+  box-shadow: 0 3px 0 var(--ink);
+}
+.sp-ops-btn:hover { transform: translateY(-2px); box-shadow: 0 5px 0 var(--ink); }
+.sp-ops-btn.add { background: var(--p1-soft); color: var(--p1-dark); }
+.sp-ops-btn.sub { background: #FFE9D6; color: var(--o-dark); }
+.sp-ops-btn.mul { background: #E0F5E3; color: var(--g-dark); }
+.sp-ops-btn.div { background: #EFE6FF; color: var(--p-dark); }
+.sp-ops-btn.selected {
+  color: white;
+  transform: translateY(2px);
+  box-shadow: 0 1px 0 var(--ink);
+}
+.sp-ops-btn.selected.add { background: var(--p1); }
+.sp-ops-btn.selected.sub { background: var(--o); }
+.sp-ops-btn.selected.mul { background: var(--g); }
+.sp-ops-btn.selected.div { background: var(--p); }
+
+.sp-answer-row {
+  display: none;
+  align-items: center;
+  gap: 8px;
+}
+.sp-answer-row.show { display: flex; animation: fadeIn 0.3s; }
+.sp-answer-row label {
+  font-family: 'Baloo 2', cursive;
+  font-weight: 700;
+  font-size: 14px;
+  color: var(--ink-soft);
+}
+.sp-answer-input {
+  flex: 1;
+  border: 2px solid var(--ink);
+  border-radius: 10px;
+  padding: 8px 12px;
+  font-family: 'Baloo 2', cursive;
+  font-weight: 700;
+  font-size: 16px;
+  text-align: center;
+  color: var(--ink);
+  background: var(--bg-alt);
+}
+.sp-answer-input:focus { outline: none; background: white; border-color: var(--p); }
+.sp-check-btn {
+  background: var(--g);
+  color: white;
+  border: 2px solid var(--ink);
+  border-radius: 10px;
+  padding: 8px 14px;
+  font-family: 'Baloo 2', cursive;
+  font-weight: 700;
+  font-size: 14px;
+  cursor: pointer;
+  box-shadow: 0 2px 0 var(--ink);
+}
+.sp-feedback {
+  margin-top: 10px;
+  padding: 8px 12px;
+  border-radius: 10px;
+  font-family: 'Baloo 2', cursive;
+  font-weight: 700;
+  font-size: 13px;
+  display: none;
+}
+.sp-feedback.show { display: block; animation: fadeIn 0.3s; }
+.sp-feedback.correct { background: rgba(107,203,119,0.2); color: var(--g-dark); }
+.sp-feedback.wrong { background: rgba(255,107,107,0.2); color: var(--p1-dark); }
+.sp-feedback.hint { background: var(--y-soft); color: var(--ink); }
+
+/* === BINGO === */
+.bingo-section {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+.bingo-panel {
+  background: white;
+  border: 3px solid var(--ink);
+  border-radius: 18px;
+  padding: 16px;
+  box-shadow: 0 5px 0 var(--ink);
+}
+.bingo-panel.p1 { border-color: var(--p1-dark); box-shadow: 0 5px 0 var(--p1-dark); }
+.bingo-panel.p2 { border-color: var(--p2-dark); box-shadow: 0 5px 0 var(--p2-dark); }
+.bingo-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
+}
+.bingo-header h3 {
+  font-family: 'Baloo 2', cursive;
+  font-weight: 700;
+  font-size: 16px;
+  display: flex; align-items: center; gap: 8px;
+}
+.bingo-panel.p1 .bingo-header h3 { color: var(--p1-dark); }
+.bingo-panel.p2 .bingo-header h3 { color: var(--p2-dark); }
+.bingo-score {
+  background: var(--y);
+  border: 2px solid var(--ink);
+  border-radius: 10px;
+  padding: 4px 10px;
+  font-family: 'Baloo 2', cursive;
+  font-weight: 800;
+  font-size: 13px;
+}
+.bingo-question {
+  background: var(--bg-alt);
+  border: 2px dashed var(--ink);
+  border-radius: 12px;
+  padding: 10px;
+  text-align: center;
+  margin-bottom: 10px;
+  font-family: 'Baloo 2', cursive;
+  font-weight: 800;
+  font-size: 22px;
+  color: var(--ink);
+  min-height: 56px;
+  display: flex; align-items: center; justify-content: center;
+}
+.bingo-question .q-num {
+  background: white;
+  padding: 4px 12px;
+  border-radius: 8px;
+  border: 2px solid var(--ink);
+}
+.bingo-input-row {
+  display: flex; gap: 6px;
+  margin-bottom: 10px;
+}
+.bingo-input {
+  flex: 1;
+  border: 2px solid var(--ink);
+  border-radius: 10px;
+  padding: 8px;
+  font-family: 'Baloo 2', cursive;
+  font-weight: 700;
+  font-size: 18px;
+  text-align: center;
+  color: var(--ink);
+  background: var(--bg-alt);
+}
+.bingo-input:focus { outline: none; background: white; border-color: var(--p); }
+.bingo-btn {
+  background: var(--g);
+  color: white;
+  border: 2px solid var(--ink);
+  border-radius: 10px;
+  padding: 8px 14px;
+  font-family: 'Baloo 2', cursive;
+  font-weight: 700;
+  font-size: 14px;
+  cursor: pointer;
+  box-shadow: 0 2px 0 var(--ink);
+}
+.bingo-btn:hover { background: var(--g-dark); }
+.bingo-grid {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 4px;
+  margin-top: 8px;
+}
+.bingo-cell {
+  aspect-ratio: 1;
+  background: var(--bg-alt);
+  border: 2px solid var(--ink);
+  border-radius: 8px;
+  display: flex; align-items: center; justify-content: center;
+  font-family: 'Baloo 2', cursive;
+  font-weight: 700;
+  font-size: 13px;
+  color: var(--ink);
+  transition: all 0.3s;
+  cursor: pointer;
+  position: relative;
+}
+.bingo-cell.marked {
+  background: var(--g);
+  color: white;
+  transform: scale(0.95);
+  animation: popMark 0.4s;
+}
+.bingo-cell.marked::after {
+  content: '★';
+  position: absolute;
+  font-size: 24px;
+  color: var(--y);
+  text-shadow: 0 0 4px var(--ink);
+}
+@keyframes popMark {
+  0% { transform: scale(0.5) rotate(-180deg); }
+  60% { transform: scale(1.2) rotate(20deg); }
+  100% { transform: scale(0.95) rotate(0); }
+}
+.bingo-cell.bingo-win {
+  background: var(--p1);
+  color: white;
+  animation: winFlash 0.6s ease-in-out infinite alternate;
+}
+@keyframes winFlash {
+  from { box-shadow: 0 0 0 var(--y); }
+  to { box-shadow: 0 0 16px var(--y); }
+}
+.bingo-feedback {
+  margin-top: 8px;
+  font-family: 'Baloo 2', cursive;
+  font-weight: 700;
+  font-size: 13px;
+  text-align: center;
+  min-height: 20px;
+}
+.bingo-feedback.correct { color: var(--g-dark); }
+.bingo-feedback.wrong { color: var(--p1-dark); }
+
+.bingo-controls {
+  grid-column: 1 / -1;
+  display: flex;
+  gap: 12px;
+  justify-content: center;
+  margin-top: 10px;
+}
+.bingo-reset {
+  background: var(--p1);
+  color: white;
+  border: 2px solid var(--ink);
+  border-radius: 12px;
+  padding: 10px 20px;
+  font-family: 'Baloo 2', cursive;
+  font-weight: 700;
+  font-size: 14px;
+  cursor: pointer;
+  box-shadow: 0 3px 0 var(--ink);
+}
+.bingo-reset:hover { transform: translateY(-2px); box-shadow: 0 5px 0 var(--ink); }
+
+/* === REFLECTION === */
+.reflection { text-align: center; }
+.refl-emoji {
+  font-size: 60px;
+  display: inline-block;
+  animation: wave 2s ease-in-out infinite;
+}
+@keyframes wave {
+  0%, 100% { transform: rotate(0); }
+  25% { transform: rotate(-15deg); }
+  75% { transform: rotate(15deg); }
+}
+.reflection h2 {
+  font-family: 'Baloo 2', cursive;
+  font-weight: 800;
+  font-size: clamp(36px, 5vw, 64px);
+  line-height: 1;
+  margin: 10px 0 8px;
+  letter-spacing: -1px;
+}
+.reflection h2 .accent { color: var(--p1); }
+.reflection h2 .accent2 { color: var(--p2); }
+.reflection .sub {
+  font-family: 'Fredoka', sans-serif;
+  font-size: 16px;
+  color: var(--ink-soft);
+  margin-bottom: 28px;
+}
+.refl-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 14px;
+  margin: 24px 0;
+  text-align: left;
+}
+.refl-card {
+  background: white;
+  border: 3px solid var(--ink);
+  border-radius: 16px;
+  padding: 18px;
+  box-shadow: 0 4px 0 var(--ink);
+  position: relative;
+}
+.refl-card::before {
+  content: '?';
+  position: absolute;
+  top: -14px; left: 16px;
+  background: var(--y);
+  color: var(--ink);
+  width: 32px; height: 32px;
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-family: 'Baloo 2', cursive;
+  font-weight: 800;
+  font-size: 18px;
+  border: 2px solid var(--ink);
+}
+.refl-card:nth-child(2)::before { background: var(--p1); color: white; }
+.refl-card:nth-child(3)::before { background: var(--p2); color: white; }
+.refl-card h4 {
+  font-family: 'Baloo 2', cursive;
+  font-weight: 700;
+  font-size: 15px;
+  margin: 8px 0 6px;
+}
+.refl-card p {
+  font-size: 13px;
+  color: var(--ink-soft);
+  line-height: 1.5;
+}
+.thank-you {
+  margin-top: 28px;
+  padding: 24px;
+  background: linear-gradient(135deg, var(--p1), var(--p2));
+  color: white;
+  border-radius: 20px;
+  border: 3px solid var(--ink);
+  box-shadow: 0 6px 0 var(--ink);
+  position: relative;
+}
+.thank-you h3 {
+  font-family: 'Baloo 2', cursive;
+  font-weight: 800;
+  font-size: 32px;
+}
+.thank-you p {
+  font-family: 'Fredoka', sans-serif;
+  font-size: 16px;
+  margin-top: 8px;
+}
+.sparkle {
+  position: absolute;
+  font-size: 22px;
+  animation: sparkleFloat 3s ease-in-out infinite;
+}
+.sparkle.s1 { top: -12px; left: 8%; }
+.sparkle.s2 { top: -16px; right: 12%; animation-delay: 1s; }
+.sparkle.s3 { bottom: -12px; left: 18%; animation-delay: 1.5s; }
+.sparkle.s4 { bottom: -16px; right: 8%; animation-delay: 0.5s; }
+@keyframes sparkleFloat {
+  0%, 100% { transform: translateY(0) rotate(0); }
+  50% { transform: translateY(-8px) rotate(180deg); }
+}
+
+/* === RESPONSIVE === */
+@media (max-width: 900px) {
+  .mult-section, .practice-layout, .story-grid, .story-practice, .bingo-section { grid-template-columns: 1fr; }
+  .name-inputs { grid-template-columns: 1fr; }
+  .vs-badge { margin: 0 auto; }
+}
+@media (max-width: 600px) {
+  .slide { padding: 70px 12px 80px; }
+  header { padding: 10px 12px; }
+  .logo span { display: none; }
+  .player-tags { top: 8px; gap: 4px; }
+  .ptag { padding: 4px 8px; font-size: 11px; }
+  .ptag-avatar { width: 22px; height: 22px; font-size: 12px; }
+  .grid-3, .grid-4 { grid-template-columns: 1fr 1fr; }
+  .q-list { grid-template-columns: 1fr; }
+}
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; }
+}
+</style>
+</head>
+<body>
+
+<div class="float-bg" id="floatBg"></div>
+<div class="progress-bar" id="progressBar" style="width: 11%"></div>
+
+<header>
+  <div class="logo">
+    <div class="logo-icon">∑</div>
+    <span>Math Duo Adventure</span>
+  </div>
+  <div class="slide-counter">Slide <span id="currentSlide">1</span>/9</div>
+</header>
+
+<div class="player-tags" id="playerTags" style="display:none;">
+  <div class="ptag p1">
+    <div class="ptag-avatar" id="ptagAvatar1">A</div>
+    <span id="ptagName1">Player 1</span>
+    <span class="ptag-score" id="ptagScore1">0</span>
+  </div>
+  <div class="ptag p2">
+    <div class="ptag-avatar" id="ptagAvatar2">B</div>
+    <span id="ptagName2">Player 2</span>
+    <span class="ptag-score" id="ptagScore2">0</span>
+  </div>
+</div>
+
+<div class="slides-container">
+
+  <!-- ========== SLIDE 1: COVER ========== -->
+  <section class="slide active" data-slide="1">
+    <div class="slide-inner cover">
+      <div class="cover-deco deco-1">+</div>
+      <div class="cover-deco deco-2">×</div>
+      <div class="cover-deco deco-3">÷</div>
+      <div class="cover-deco deco-4">−</div>
+      
+      <div class="cover-tag">Kelas 4 SD • Operasi Hitung</div>
+      <h1>Petualangan<br><span class="accent">Matematika</span> <span class="accent2">Duo</span></h1>
+      <p class="cover-subtitle">Bermain berdua, belajar berdua — siapa yang paling jago hitung cepat?</p>
+      
+      <div class="name-inputs">
+        <div class="name-card p1">
+          <div class="avatar">🦊</div>
+          <h3>Player 1 (Merah)</h3>
+          <input type="text" id="nameInput1" placeholder="Tulis namamu..." maxlength="12">
+        </div>
+        <div class="vs-badge">VS</div>
+        <div class="name-card p2">
+          <div class="avatar">🐙</div>
+          <h3>Player 2 (Hijau)</h3>
+          <input type="text" id="nameInput2" placeholder="Tulis namamu..." maxlength="12">
+        </div>
+      </div>
+      
+      <button class="start-btn" id="startBtn">🚀 Mulai Petualangan!</button>
+    </div>
+  </section>
+
+  <!-- ========== SLIDE 2: TUJUAN ========== -->
+  <section class="slide" data-slide="2">
+    <div class="slide-inner">
+      <h2 class="slide-title">Tujuan <span class="accent">Pembelajaran</span></h2>
+      <p class="slide-subtitle">Setelah petualangan ini, kalian berdua akan bisa →</p>
+      
+      <div class="grid-3">
+        <div class="card obj-card">
+          <div class="card-num">1</div>
+          <div class="icon">➕</div>
+          <h3>Penjumlahan</h3>
+          <p>Menjumlahkan bilangan dengan tepat menggunakan teknik bersusun pendek dan panjang.</p>
+        </div>
+        <div class="card obj-card">
+          <div class="card-num">2</div>
+          <div class="icon">➖</div>
+          <h3>Pengurangan</h3>
+          <p>Mengurangkan bilangan dengan teknik bersusun, termasuk teknik meminjam.</p>
+        </div>
+        <div class="card obj-card">
+          <div class="card-num">3</div>
+          <div class="icon">✖️</div>
+          <h3>Perkalian</h3>
+          <p>Mengalikan bilangan satu digit dan dua digit, serta menggunakan tabel perkalian.</p>
+        </div>
+      </div>
+
+      <div class="card" style="margin-top: 18px; text-align: center; background: linear-gradient(135deg, #FFF8E7, #FFE5E5);">
+        <h3 style="font-family:'Baloo 2',cursive; color: var(--p1-dark); margin-bottom: 8px;">🏆 Aturan Main</h3>
+        <p style="font-size: 14px; color: var(--ink); line-height: 1.6;">
+          Kalian berdua akan berlomba menyelesaikan soal-soal seru. Pemain dengan skor tertinggi menjadi <strong>Juara Petualangan Matematika!</strong><br>
+          Tiap jawaban benar = <strong>10 poin</strong>. Jawaban salah tetap semangat, ya!
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ========== SLIDE 3: MATERI ========== -->
+  <section class="slide" data-slide="3">
+    <div class="slide-inner">
+      <h2 class="slide-title">Materi <span class="accent">Operasi Hitung</span></h2>
+      <p class="slide-subtitle">Pilih operasi yang ingin kalian pelajari →</p>
+      
+      <div class="ops-tabs">
+        <button class="ops-tab active" data-ops="add"><span class="ops-symbol">+</span>Penjumlahan</button>
+        <button class="ops-tab" data-ops="sub"><span class="ops-symbol">−</span>Pengurangan</button>
+        <button class="ops-tab" data-ops="mul"><span class="ops-symbol">×</span>Perkalian</button>
+        <button class="ops-tab" data-ops="div"><span class="ops-symbol">÷</span>Pembagian</button>
+      </div>
+
+      <!-- ADD -->
+      <div class="ops-content active" data-ops="add">
+        <div class="ops-panel">
+          <h3>➕ Penjumlahan Bersusun</h3>
+          <p>Penjumlahan adalah menambahkan dua bilangan atau lebih. Kita gunakan <strong>metode bersusun ke bawah</strong> agar mudah dan rapi.</p>
+          
+          <div class="susun-demo">
+            <div class="susun-calc">
+              <div class="row"><span class="carry">1</span></div>
+              <div class="row">3 4 7</div>
+              <div class="row"><span class="op-sign">+</span> 2 8 5</div>
+              <div class="row line">6 3 2</div>
+            </div>
+            <div class="susun-steps">
+              <h4>Langkah-langkah:</h4>
+              <ol>
+                <li>Tulis bilangan rapi — <strong>satuan di bawah satuan, puluhan di bawah puluhan</strong>.</li>
+                <li>Jumlahkan dari kolom <strong>kanan (satuan)</strong>: 7 + 5 = 12. Tulis 2, simpan 1.</li>
+                <li>Jumlahkan kolom puluhan + simpanan: 4 + 8 + 1 = 13. Tulis 3, simpan 1.</li>
+                <li>Jumlahkan kolom ratusan + simpanan: 3 + 2 + 1 = 6. Tulis 6.</li>
+                <li>Hasilnya: <strong>632</strong>. Beres! 🎉</li>
+              </ol>
+            </div>
+          </div>
+          <p style="margin-top: 10px; padding: 10px; background: var(--p1-soft); border-radius: 10px; font-size: 13px;">
+            <strong>💡 Tip:</strong> Selalu mulai dari kanan (satuan) dan jangan lupa simpanan!
+          </p>
+        </div>
+      </div>
+
+      <!-- SUB -->
+      <div class="ops-content" data-ops="sub">
+        <div class="ops-panel">
+          <h3>➖ Pengurangan Bersusun</h3>
+          <p>Pengurangan adalah mengambil sebagian dari sebuah bilangan. Jika angka atas lebih kecil, kita <strong>meminjam</strong> dari kolom sebelah kiri.</p>
+          
+          <div class="susun-demo">
+            <div class="susun-calc">
+              <div class="row"><span class="carry">2 13</span></div>
+              <div class="row">5 0 0</div>
+              <div class="row"><span class="op-sign">−</span> 2 6 8</div>
+              <div class="row line">2 3 2</div>
+            </div>
+            <div class="susun-steps">
+              <h4>Langkah-langkah:</h4>
+              <ol>
+                <li>Tulis bilangan rapi — bilangan terbesar di atas.</li>
+                <li>Satuan: 0 − 8 tidak bisa. <strong>Pinjam 1</strong> dari puluhan → 10 − 8 = 2.</li>
+                <li>Puluhan: 9 (setelah dipinjam) − 6 = 3.</li>
+                <li>Ratusan: 4 (setelah dipinjam) − 2 = 2.</li>
+                <li>Hasilnya: <strong>232</strong>. Mantap! 💪</li>
+              </ol>
+            </div>
+          </div>
+          <p style="margin-top: 10px; padding: 10px; background: #FFE9D6; border-radius: 10px; font-size: 13px;">
+            <strong>💡 Tip:</strong> Kalau angka atas lebih kecil, jangan panik — tinggal pinjam dari sebelah kiri!
+          </p>
+        </div>
+      </div>
+
+      <!-- MUL -->
+      <div class="ops-content" data-ops="mul">
+        <div class="ops-panel">
+          <h3>✖️ Perkalian Bersusun</h3>
+          <p>Perkalian adalah penjumlahan berulang. Untuk perkalian 2 digit, kita kalikan per bagian lalu jumlahkan.</p>
+          
+          <div class="susun-demo">
+            <div class="susun-calc">
+              <div class="row">2 3</div>
+              <div class="row"><span class="op-sign">×</span> 1 4</div>
+              <div class="row line">9 2</div>
+              <div class="row">2 3 0</div>
+              <div class="row line">3 2 2</div>
+            </div>
+            <div class="susun-steps">
+              <h4>Langkah-langkah (23 × 14):</h4>
+              <ol>
+                <li>Kalikan 23 dengan <strong>angka satuan</strong> (4): 4×3=12, tulis 2 simpan 1. 4×2=8, ditambah 1 = 9 → <strong>92</strong>.</li>
+                <li>Kalikan 23 dengan <strong>angka puluhan</strong> (1), geser 1 kolom ke kiri: 1×3=3, 1×2=2 → <strong>230</strong>.</li>
+                <li>Jumlahkan kedua hasil: 92 + 230 = <strong>322</strong>.</li>
+                <li>Selesai! 🎯</li>
+              </ol>
+            </div>
+          </div>
+          <p style="margin-top: 10px; padding: 10px; background: #E0F5E3; border-radius: 10px; font-size: 13px;">
+            <strong>💡 Tip:</strong> Ingat tabel perkalian 1-10 agar makin cepat. Lihat slide 5 untuk tabel interaktif!
+          </p>
+        </div>
+      </div>
+
+      <!-- DIV -->
+      <div class="ops-content" data-ops="div">
+        <div class="ops-panel">
+          <h3>÷ Pembagian Bersusun (Cunguk)</h3>
+          <p>Pembagian adalah membagi suatu bilangan menjadi bagian-bagian sama. Kita gunakan <strong>metode cunguk</strong> (ladder method).</p>
+          
+          <div class="susun-demo">
+            <div class="susun-calc" style="font-size: 18px;">
+              <div style="display:flex; align-items: center; gap: 4px;">
+                <span style="border:2px solid var(--ink); border-radius:8px; padding:4px 8px;">1 2</span>
+                <span style="font-size:24px;">⟌</span>
+                <span>1 4 4</span>
+              </div>
+              <div style="padding-left: 60px; color: var(--g-dark);">− 1 2</div>
+              <div style="padding-left: 60px; border-bottom: 1px solid;">2 4</div>
+              <div style="padding-left: 60px; color: var(--g-dark);">− 2 4</div>
+              <div style="padding-left: 60px;">0</div>
+            </div>
+            <div class="susun-steps">
+              <h4>Langkah-langkah (144 ÷ 12):</h4>
+              <ol>
+                <li>Tulis <strong>12 di luar</strong> cunguk, <strong>144 di dalam</strong>.</li>
+                <li>Bagi 14 dengan 12 = 1, sisa 2. Tulis 1 di atas.</li>
+                <li>Turunkan angka 4 → menjadi 24.</li>
+                <li>Bagi 24 dengan 12 = 2, sisa 0. Tulis 2 di atas.</li>
+                <li>Hasilnya: <strong>12</strong>. Karena sisa 0, habis dibagi! 🎉</li>
+              </ol>
+            </div>
+          </div>
+          <p style="margin-top: 10px; padding: 10px; background: #EFE6FF; border-radius: 10px; font-size: 13px;">
+            <strong>💡 Tip:</strong> Pembagian adalah kebalikan perkalian. Kalau 12 × 12 = 144, maka 144 ÷ 12 = 12.
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ========== SLIDE 4: YUK BERLATIH ========== -->
+  <section class="slide" data-slide="4">
+    <div class="slide-inner">
+      <h2 class="slide-title">Yuk <span class="accent">Berlatih</span> Berdua!</h2>
+      <p class="slide-subtitle">25 soal untuk masing-masing pemain — siapa cepat dia dapat!</p>
+      
+      <div class="practice-layout">
+        <div class="player-panel p1">
+          <div class="player-header">
+            <div class="player-avatar" id="practiceAvatar1">A</div>
+            <div class="player-name" id="practiceName1">Player 1</div>
+            <div class="player-progress"><span id="p1Correct">0</span>/25</div>
+          </div>
+          <div class="q-list" id="qList1"></div>
+        </div>
+        <div class="player-panel p2">
+          <div class="player-header">
+            <div class="player-avatar" id="practiceAvatar2">B</div>
+            <div class="player-name" id="practiceName2">Player 2</div>
+            <div class="player-progress"><span id="p2Correct">0</span>/25</div>
+          </div>
+          <div class="q-list" id="qList2"></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ========== SLIDE 5: TABEL PERKALIAN ========== -->
+  <section class="slide" data-slide="5">
+    <div class="slide-inner">
+      <h2 class="slide-title">Tabel <span class="accent">Perkalian</span> Ajaib</h2>
+      <p class="slide-subtitle">Alat sakti untuk menghitung cepat — ketik angka, lihat keajaibannya!</p>
+      
+      <div class="mult-section">
+        <div class="mult-table-wrap">
+          <table class="mult-table" id="multTable"></table>
+        </div>
+        
+        <div class="mult-info">
+          <div class="mult-card">
+            <h4>🎯 Coba Sendiri</h4>
+            <p>Ketik dua angka (1-10), lalu lihat hasilnya di tabel dan di sini:</p>
+            <div class="mult-inputs" style="margin-top: 8px;">
+              <input type="number" id="multA" min="1" max="10" value="3">
+              <span style="font-family:'Baloo 2',cursive;font-weight:800;font-size:20px;">×</span>
+              <input type="number" id="multB" min="1" max="10" value="4">
+              <span style="font-family:'Baloo 2',cursive;font-weight:800;font-size:20px;">=</span>
+              <div class="mult-result"><span id="multResult">12</span></div>
+            </div>
+          </div>
+
+          <div class="mult-card">
+            <h4>📖 Cara Pakai Tabel</h4>
+            <div class="howto-step">
+              <div class="howto-step-num">1</div>
+              <p>Cari angka pertama di <strong>baris paling atas</strong> (warna hijau).</p>
+            </div>
+            <div class="howto-step">
+              <div class="howto-step-num">2</div>
+              <p>Cari angka kedua di <strong>kolom paling kiri</strong> (warna merah).</p>
+            </div>
+            <div class="howto-step">
+              <div class="howto-step-num">3</div>
+              <p>Pertemuan baris dan kolom adalah <strong>hasil perkalian</strong>!</p>
+            </div>
+            <div class="div-demo">
+              Contoh: 3 × 4 → baris 3, kolom 4 → <span style="color:var(--g-dark);">12</span>
+            </div>
+          </div>
+
+          <div class="mult-card">
+            <h4>🔮 Tabel untuk Pembagian</h4>
+            <p>Tabel perkalian juga bisa untuk pembagian! Lihat kebalikannya:</p>
+            <div class="div-demo">
+              20 ÷ 5 = ? <span class="arrow">→</span> Cari 20 di <strong>baris 5</strong>, lalu lihat <strong>kolomnya</strong> = <span style="color:var(--g-dark);">4</span>
+            </div>
+            <p style="margin-top: 8px; font-size: 12px; color: var(--ink-soft);">
+              Karena 5 × 4 = 20, maka 20 ÷ 5 = 4. Mudah, kan?
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <div class="card" style="margin-top: 18px;">
+        <h3 style="font-family:'Baloo 2',cursive; font-weight: 700; color: var(--p-dark); margin-bottom: 12px;">
+          🧩 Tabel Perkalian Rumpang — Isi Bersama-sama!
+        </h3>
+        <p style="font-size: 13px; color: var(--ink-soft); margin-bottom: 12px;">
+          Sebagian sel kosong. Isi dengan jawaban yang benar, lalu tekan Enter atau klik di luar kotak. Sel hijau = benar, merah = salah.
+        </p>
+        <div style="overflow-x: auto;">
+          <table class="mult-table" id="blankMultTable" style="font-size: 14px;"></table>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ========== SLIDE 6: SOAL CERITA ========== -->
+  <section class="slide" data-slide="6">
+    <div class="slide-inner">
+      <h2 class="slide-title">Soal <span class="accent">Cerita</span></h2>
+      <p class="slide-subtitle">Operasi hitung ada di mana-mana — lihat contohnya!</p>
+      
+      <div class="story-grid">
+        <div class="story-card">
+          <div class="story-icon">🍎</div>
+          <div class="story-body">
+            <h4>Penjumlahan — Buah Apel</h4>
+            <p>Andi punya 24 apel, Budi memberikan 18 apel lagi. Berapa total apel Andi sekarang?</p>
+            <div class="story-ops add">24 + 18 = ?</div>
+            <div class="story-solution">→ 24 + 18 = 42 apel</div>
+          </div>
+        </div>
+        
+        <div class="story-card">
+          <div class="story-icon">🍬</div>
+          <div class="story-body">
+            <h4>Pengurangan — Permen</h4>
+            <p>Sinta memiliki 50 permen. Dia memberikan 27 permen kepada adiknya. Berapa sisa permen Sinta?</p>
+            <div class="story-ops sub">50 − 27 = ?</div>
+            <div class="story-solution">→ 50 − 27 = 23 permen</div>
+          </div>
+        </div>
+        
+        <div class="story-card">
+          <div class="story-icon">📚</div>
+          <div class="story-body">
+            <h4>Perkalian — Buku</h4>
+            <p>Di rak ada 6 tumpuk buku, setiap tumpuk berisi 8 buku. Berapa total buku di rak?</p>
+            <div class="story-ops mul">6 × 8 = ?</div>
+            <div class="story-solution">→ 6 × 8 = 48 buku</div>
+          </div>
+        </div>
+        
+        <div class="story-card">
+          <div class="story-icon">🍪</div>
+          <div class="story-body">
+            <h4>Pembagian — Kue</h4>
+            <p>Ibu membuat 36 kue kering untuk dibagi rata kepada 4 anak. Berapa kue setiap anak dapat?</p>
+            <div class="story-ops div">36 ÷ 4 = ?</div>
+            <div class="story-solution">→ 36 ÷ 4 = 9 kue per anak</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card" style="margin-top: 18px; background: linear-gradient(135deg, #FFF8E7, #DFF7F4);">
+        <h3 style="font-family:'Baloo 2',cursive; color: var(--p2-dark); margin-bottom: 8px;">🧠 Petunjuk Mengenal Operasi</h3>
+        <div style="display: grid; grid-template-columns: repeat(2,1fr); gap: 8px; font-size: 13px; margin-top: 8px;">
+          <p><strong style="color:var(--p1-dark);">➕ Tambah:</strong> "total", "gabung", "jumlah", "semuanya", "bertambah"</p>
+          <p><strong style="color:var(--o-dark);">➖ Kurang:</strong> "sisa", "berkurang", "lebih... dari", "diberikan", "terpakai"</p>
+          <p><strong style="color:var(--g-dark);">✖️ Kali:</strong> "setiap", "sebanyak... kali", "tumpuk", "kelompok", "total grup"</p>
+          <p><strong style="color:var(--p-dark);">÷ Bagi:</strong> "dibagi rata", "sama banyak", "per orang", "setiap bagian"</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ========== SLIDE 7: LATIHAN SOAL CERITA ========== -->
+  <section class="slide" data-slide="7">
+    <div class="slide-inner">
+      <h2 class="slide-title">Latihan <span class="accent">Soal Cerita</span></h2>
+      <p class="slide-subtitle">Baca soal, pilih operasi yang tepat (+, −, ×, ÷), lalu jawab!</p>
+      
+      <div class="story-practice" id="storyPractice"></div>
+    </div>
+  </section>
+
+  <!-- ========== SLIDE 8: BINGO ========== -->
+  <section class="slide" data-slide="8">
+    <div class="slide-inner">
+      <h2 class="slide-title">Bingo <span class="accent">Matematika</span></h2>
+      <p class="slide-subtitle">Jawab soal, tandai kotak — dapat 5 beruntun = BINGO! 🎉</p>
+      
+      <div class="bingo-section">
+        <div class="bingo-panel p1">
+          <div class="bingo-header">
+            <h3>🦊 <span id="bingoName1">Player 1</span></h3>
+            <div class="bingo-score">Skor: <span id="bingoScore1">0</span></div>
+          </div>
+          <div class="bingo-question" id="bingoQ1">
+            <span class="q-num">Klik "Soal Baru"</span>
+          </div>
+          <div class="bingo-input-row">
+            <input type="number" class="bingo-input" id="bingoInput1" placeholder="Jawaban">
+            <button class="bingo-btn" id="bingoCheck1">Jawab</button>
+            <button class="bingo-btn" id="bingoNew1" style="background: var(--o);">Soal Baru</button>
+          </div>
+          <div class="bingo-feedback" id="bingoFeedback1"></div>
+          <div class="bingo-grid" id="bingoGrid1"></div>
+        </div>
+        
+        <div class="bingo-panel p2">
+          <div class="bingo-header">
+            <h3>🐙 <span id="bingoName2">Player 2</span></h3>
+            <div class="bingo-score">Skor: <span id="bingoScore2">0</span></div>
+          </div>
+          <div class="bingo-question" id="bingoQ2">
+            <span class="q-num">Klik "Soal Baru"</span>
+          </div>
+          <div class="bingo-input-row">
+            <input type="number" class="bingo-input" id="bingoInput2" placeholder="Jawaban">
+            <button class="bingo-btn" id="bingoCheck2">Jawab</button>
+            <button class="bingo-btn" id="bingoNew2" style="background: var(--o);">Soal Baru</button>
+          </div>
+          <div class="bingo-feedback" id="bingoFeedback2"></div>
+          <div class="bingo-grid" id="bingoGrid2"></div>
+        </div>
+        
+        <div class="bingo-controls">
+          <button class="bingo-reset" id="bingoReset">🔄 Reset Bingo</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ========== SLIDE 9: REFLECTION ========== -->
+  <section class="slide" data-slide="9">
+    <div class="slide-inner reflection">
+      <div class="refl-emoji">🎉</div>
+      <h2>Sampai Jumpa, <span class="accent">Juara</span> <span class="accent2">Matematika</span>!</h2>
+      <p class="sub">Saatnya merenungkan petualangan kita hari ini</p>
+      
+      <div class="refl-grid">
+        <div class="refl-card">
+          <h4>Apa yang sudah kupelajari?</h4>
+          <p>Sebutkan 3 operasi hitung yang sudah kalian kuasai hari ini. Apakah +, −, ×, atau ÷?</p>
+        </div>
+        <div class="refl-card">
+          <h4>Bagian mana yang paling seru?</h4>
+          <p>Apakah berlatih bersusun, bermain bingo, atau soal cerita? Ceritakan ke temanmu!</p>
+        </div>
+        <div class="refl-card">
+          <h4>Di mana aku pakai matematika?</h4>
+          <p>Membagi permen dengan adik, menghitung uang jajan, atau membantu ibu di pasar — matematika ada di mana-mana!</p>
+        </div>
+      </div>
+
+      <div class="card" style="margin-top: 20px; background: linear-gradient(135deg, var(--p1-soft), var(--p2-soft));">
+        <h3 style="font-family:'Baloo 2',cursive; color: var(--ink); margin-bottom: 12px; text-align: center;">🏆 Skor Akhir Petualangan</h3>
+        <div style="display: flex; gap: 20px; justify-content: center; flex-wrap: wrap;">
+          <div style="background: white; padding: 12px 24px; border-radius: 14px; border: 2px solid var(--ink); box-shadow: 0 3px 0 var(--ink);">
+            <div style="font-family:'Baloo 2',cursive; font-weight:700; color: var(--p1-dark); font-size: 14px;">🦊 <span id="finalName1">Player 1</span></div>
+            <div style="font-family:'Baloo 2',cursive; font-weight:800; font-size: 28px; color: var(--p1);"><span id="finalScore1">0</span> poin</div>
+          </div>
+          <div style="background: white; padding: 12px 24px; border-radius: 14px; border: 2px solid var(--ink); box-shadow: 0 3px 0 var(--ink);">
+            <div style="font-family:'Baloo 2',cursive; font-weight:700; color: var(--p2-dark); font-size: 14px;">🐙 <span id="finalName2">Player 2</span></div>
+            <div style="font-family:'Baloo 2',cursive; font-weight:800; font-size: 28px; color: var(--p2);"><span id="finalScore2">0</span> poin</div>
+          </div>
+        </div>
+        <p id="winnerText" style="text-align: center; margin-top: 14px; font-family:'Baloo 2',cursive; font-weight:800; font-size: 20px; color: var(--ink);"></p>
+      </div>
+
+      <div class="thank-you">
+        <div class="sparkle s1">✦</div>
+        <div class="sparkle s2">★</div>
+        <div class="sparkle s3">✧</div>
+        <div class="sparkle s4">✦</div>
+        <h3>Thank You for Today!</h3>
+        <p>Teruslah berlatih, teruslah bermain — kalian berdua hebat! 💪🌟</p>
+      </div>
+    </div>
+  </section>
+
+</div>
+
+<div class="nav-controls">
+  <button class="nav-btn" id="prevBtn" disabled>‹</button>
+  <div class="nav-dots" id="navDots"></div>
+  <button class="nav-btn" id="nextBtn">›</button>
+</div>
+
+<script>
+/* ===== FLOATING BG ===== */
+const floatBg = document.getElementById('floatBg');
+const symbols = ['+','−','×','÷','=','1','2','3','4','5','6','7','8','9','0','?'];
+for (let i = 0; i < 20; i++) {
+  const el = document.createElement('div');
+  el.className = 'float-item';
+  el.textContent = symbols[Math.floor(Math.random() * symbols.length)];
+  el.style.left = Math.random() * 100 + '%';
+  el.style.fontSize = (24 + Math.random() * 40) + 'px';
+  el.style.color = ['#FF6B6B','#4ECDC4','#FFD93D','#6BCB77','#B983FF'][Math.floor(Math.random()*5)];
+  el.style.animationDuration = (15 + Math.random() * 15) + 's';
+  el.style.animationDelay = (-Math.random() * 15) + 's';
+  floatBg.appendChild(el);
+}
+
+/* ===== PLAYERS STATE ===== */
+const players = {
+  1: { name: 'Player 1', avatar: 'A', score: 0, correct: 0 },
+  2: { name: 'Player 2', avatar: 'B', score: 0, correct: 0 }
+};
+
+function updatePlayerTags() {
+  document.getElementById('ptagName1').textContent = players[1].name;
+  document.getElementById('ptagName2').textContent = players[2].name;
+  document.getElementById('ptagAvatar1').textContent = players[1].avatar;
+  document.getElementById('ptagAvatar2').textContent = players[2].avatar;
+  document.getElementById('ptagScore1').textContent = players[1].score;
+  document.getElementById('ptagScore2').textContent = players[2].score;
+  document.getElementById('practiceName1').textContent = players[1].name;
+  document.getElementById('practiceName2').textContent = players[2].name;
+  document.getElementById('practiceAvatar1').textContent = players[1].avatar;
+  document.getElementById('practiceAvatar2').textContent = players[2].avatar;
+  document.getElementById('bingoName1').textContent = players[1].name;
+  document.getElementById('bingoName2').textContent = players[2].name;
+  document.getElementById('finalName1').textContent = players[1].name;
+  document.getElementById('finalName2').textContent = players[2].name;
+  document.getElementById('finalScore1').textContent = players[1].score;
+  document.getElementById('finalScore2').textContent = players[2].score;
+  
+  const w = document.getElementById('winnerText');
+  if (players[1].score > players[2].score) w.textContent = `🎉 Juara: ${players[1].name}! 🎉`;
+  else if (players[2].score > players[1].score) w.textContent = `🎉 Juara: ${players[2].name}! 🎉`;
+  else if (players[1].score > 0) w.textContent = `🤝 Seri! Kalian sama hebatnya!`;
+  else w.textContent = `Yuk mulai petualangan dari awal!`;
+}
+
+/* ===== COVER: NAME INPUTS ===== */
+function updateAvatars() {
+  const n1 = document.getElementById('nameInput1').value.trim();
+  const n2 = document.getElementById('nameInput2').value.trim();
+  players[1].name = n1 || 'Player 1';
+  players[2].name = n2 || 'Player 2';
+  players[1].avatar = (players[1].name[0] || 'P').toUpperCase();
+  players[2].avatar = (players[2].name[0] || 'P').toUpperCase();
+  updatePlayerTags();
+}
+document.getElementById('nameInput1').addEventListener('input', updateAvatars);
+document.getElementById('nameInput2').addEventListener('input', updateAvatars);
+
+document.getElementById('startBtn').addEventListener('click', () => {
+  document.getElementById('playerTags').style.display = 'flex';
+  updateAvatars();
+  goToSlide(2);
+});
+
+/* ===== SLIDE NAV ===== */
+let currentSlide = 1;
+const totalSlides = 9;
+const slides = document.querySelectorAll('.slide');
+const prevBtn = document.getElementById('prevBtn');
+const nextBtn = document.getElementById('nextBtn');
+const progressBar = document.getElementById('progressBar');
+const currentSlideEl = document.getElementById('currentSlide');
+const navDots = document.getElementById('navDots');
+for (let i = 1; i <= totalSlides; i++) {
+  const d = document.createElement('div');
+  d.className = 'dot' + (i === 1 ? ' active' : '');
+  d.addEventListener('click', () => goToSlide(i));
+  navDots.appendChild(d);
+}
+const dots = document.querySelectorAll('.dot');
+function goToSlide(n) {
+  if (n < 1 || n > totalSlides) return;
+  slides.forEach((s, i) => {
+    s.classList.remove('active', 'prev');
+    if (i + 1 === n) s.classList.add('active');
+    else if (i + 1 < n) s.classList.add('prev');
+  });
+  dots.forEach((d, i) => d.classList.toggle('active', i + 1 === n));
+  currentSlide = n;
+  currentSlideEl.textContent = n;
+  progressBar.style.width = (n / totalSlides * 100) + '%';
+  prevBtn.disabled = n === 1;
+  nextBtn.disabled = n === totalSlides;
+  slides[n - 1].scrollTop = 0;
+  if (n === 9) updatePlayerTags();
+}
+prevBtn.addEventListener('click', () => goToSlide(currentSlide - 1));
+nextBtn.addEventListener('click', () => goToSlide(currentSlide + 1));
+document.addEventListener('keydown', e => {
+  if (e.target.tagName === 'INPUT') return;
+  if (e.key === 'ArrowRight') goToSlide(currentSlide + 1);
+  if (e.key === 'ArrowLeft') goToSlide(currentSlide - 1);
+});
+
+/* ===== SLIDE 3: OPS TABS ===== */
+document.querySelectorAll('.ops-tab').forEach(btn => {
+  btn.addEventListener('click', () => {
+    const ops = btn.dataset.ops;
+    document.querySelectorAll('.ops-tab').forEach(b => b.classList.remove('active'));
+    document.querySelectorAll('.ops-content').forEach(c => c.classList.remove('active'));
+    btn.classList.add('active');
+    document.querySelector(`.ops-content[data-ops="${ops}"]`).classList.add('active');
+  });
+});
+
+/* ===== SLIDE 4: 25 QUESTIONS PER PLAYER ===== */
+function genQuestions(seed) {
+  // Generate 25 mixed questions deterministically per seed
+  const ops = ['+','+','−','−','×','×','÷'];
+  const qs = [];
+  let s = seed;
+  function rand() { s = (s * 9301 + 49297) % 233280; return s / 233280; }
+  for (let i = 0; i < 25; i++) {
+    const op = ops[Math.floor(rand() * ops.length)];
+    let a, b, ans, text;
+    if (op === '+') {
+      a = 10 + Math.floor(rand() * 90);
+      b = 10 + Math.floor(rand() * 90);
+      ans = a + b;
+      text = `${a} + ${b}`;
+    } else if (op === '−') {
+      a = 20 + Math.floor(rand() * 80);
+      b = 5 + Math.floor(rand() * (a - 5));
+      ans = a - b;
+      text = `${a} − ${b}`;
+    } else if (op === '×') {
+      a = 2 + Math.floor(rand() * 9);
+      b = 2 + Math.floor(rand() * 9);
+      ans = a * b;
+      text = `${a} × ${b}`;
+    } else {
+      b = 2 + Math.floor(rand() * 9);
+      ans = 2 + Math.floor(rand() * 9);
+      a = b * ans;
+      text = `${a} ÷ ${b}`;
+    }
+    qs.push({ n: i+1, text, ans });
+  }
+  return qs;
+}
+
+const questionsP1 = genQuestions(42);
+const questionsP2 = genQuestions(87);
+
+function renderQuestions(list, containerId, playerNum) {
+  const container = document.getElementById(containerId);
+  container.innerHTML = list.map((q, i) => `
+    <div class="q-item" data-idx="${i}" data-player="${playerNum}">
+      <div class="q-item-text">${q.n}. ${q.text} = ?</div>
+      <div class="q-item-row">
+        <input type="number" class="q-item-input" placeholder="=?">
+        <button class="q-item-check">Cek</button>
+      </div>
+      <div class="q-item-feedback"></div>
+    </div>
+  `).join('');
+}
+renderQuestions(questionsP1, 'qList1', 1);
+renderQuestions(questionsP2, 'qList2', 2);
+
+document.addEventListener('click', e => {
+  const btn = e.target.closest('.q-item-check');
+  if (!btn) return;
+  const item = btn.closest('.q-item');
+  const idx = parseInt(item.dataset.idx);
+  const playerNum = parseInt(item.dataset.player);
+  const qList = playerNum === 1 ? questionsP1 : questionsP2;
+  const q = qList[idx];
+  const input = item.querySelector('.q-item-input');
+  const fb = item.querySelector('.q-item-feedback');
+  const userAns = parseInt(input.value);
+  
+  if (isNaN(userAns)) {
+    fb.textContent = 'Isi jawaban dulu ya!';
+    fb.className = 'q-item-feedback show wrong';
+    return;
+  }
+  
+  if (userAns === q.ans) {
+    item.classList.add('correct');
+    item.classList.remove('wrong');
+    fb.textContent = '✓ Benar! +10';
+    fb.className = 'q-item-feedback show correct';
+    if (!item.classList.contains('scored')) {
+      item.classList.add('scored');
+      players[playerNum].score += 10;
+      players[playerNum].correct += 1;
+      document.getElementById(playerNum === 1 ? 'p1Correct' : 'p2Correct').textContent = players[playerNum].correct;
+      updatePlayerTags();
+    }
+  } else {
+    item.classList.add('wrong');
+    item.classList.remove('correct');
+    fb.textContent = `✗ Coba lagi. Jawaban: ${q.ans}`;
+    fb.className = 'q-item-feedback show wrong';
+    if (item.classList.contains('scored')) {
+      item.classList.remove('scored');
+      players[playerNum].score = Math.max(0, players[playerNum].score - 10);
+      players[playerNum].correct = Math.max(0, players[playerNum].correct - 1);
+      document.getElementById(playerNum === 1 ? 'p1Correct' : 'p2Correct').textContent = players[playerNum].correct;
+      updatePlayerTags();
+    }
+  }
+});
+
+document.addEventListener('keydown', e => {
+  if (e.key === 'Enter' && e.target.classList.contains('q-item-input')) {
+    e.target.parentElement.querySelector('.q-item-check').click();
+  }
+});
+
+/* ===== SLIDE 5: MULTIPLICATION TABLE ===== */
+function buildMultTable() {
+  const tbl = document.getElementById('multTable');
+  let html = '<tr><th class="corner">×</th>';
+  for (let c = 1; c <= 10; c++) html += `<th class="col-h">${c}</th>`;
+  html += '</tr>';
+  for (let r = 1; r <= 10; r++) {
+    html += `<tr><th class="row-h">${r}</th>`;
+    for (let c = 1; c <= 10; c++) {
+      html += `<td data-r="${r}" data-c="${c}">${r*c}</td>`;
+    }
+    html += '</tr>';
+  }
+  tbl.innerHTML = html;
+}
+buildMultTable();
+
+function highlightMult() {
+  const a = parseInt(document.getElementById('multA').value);
+  const b = parseInt(document.getElementById('multB').value);
+  document.querySelectorAll('#multTable td').forEach(td => {
+    td.classList.remove('highlight-row','highlight-col','highlight-cell');
+  });
+  if (a >= 1 && a <= 10 && b >= 1 && b <= 10) {
+    document.querySelectorAll(`#multTable td[data-r="${a}"]`).forEach(td => td.classList.add('highlight-row'));
+    document.querySelectorAll(`#multTable td[data-c="${b}"]`).forEach(td => td.classList.add('highlight-col'));
+    const cell = document.querySelector(`#multTable td[data-r="${a}"][data-c="${b}"]`);
+    if (cell) cell.classList.add('highlight-cell');
+    document.getElementById('multResult').textContent = a * b;
+  }
+}
+document.getElementById('multA').addEventListener('input', highlightMult);
+document.getElementById('multB').addEventListener('input', highlightMult);
+highlightMult();
+
+/* Blank multiplication table */
+function buildBlankTable() {
+  const tbl = document.getElementById('blankMultTable');
+  let html = '<tr><th class="corner">×</th>';
+  for (let c = 1; c <= 10; c++) html += `<th class="col-h">${c}</th>`;
+  html += '</tr>';
+  // Pilih sel yang akan dijadikan input (sekitar 40% sel selain header)
+  const blankSet = new Set();
+  const seedList = [7,3,8,4,6,9,2,5]; // acak konsisten
+  let idx = 0;
+  for (let r = 1; r <= 10; r++) {
+    html += `<tr><th class="row-h">${r}</th>`;
+    for (let c = 1; c <= 10; c++) {
+      const val = r * c;
+      // Tentukan sel kosong berdasarkan pola
+      const isBlank = ((r * 7 + c * 3) % 5 === 0) || ((r + c) % 4 === 0 && c > 2);
+      if (isBlank) {
+        html += `<td class="input-cell" data-r="${r}" data-c="${c}" data-ans="${val}">
+          <input type="number" min="0" max="100">
+        </td>`;
+      } else {
+        html += `<td>${val}</td>`;
+      }
+    }
+    html += '</tr>';
+  }
+  tbl.innerHTML = html;
+  
+  tbl.querySelectorAll('input').forEach(inp => {
+    inp.addEventListener('input', e => {
+      const td = e.target.closest('td');
+      const ans = parseInt(td.dataset.ans);
+      const val = parseInt(e.target.value);
+      td.classList.remove('correct','wrong');
+      if (!isNaN(val)) {
+        if (val === ans) {
+          td.classList.add('correct');
+        } else {
+          td.classList.add('wrong');
+        }
+      }
+    });
+  });
+}
+buildBlankTable();
+
+/* ===== SLIDE 7: STORY PROBLEMS ===== */
+const storyProblems = [
+  { text: "Dina memiliki 35 kelereng. Dia meminjam 18 kelereng kepada temannya. Berapa kelereng Dina sekarang?", ops: "−", ans: 17, hint: "Dina 'meminjam' = memberi = berkurang." },
+  { text: "Di kelas ada 6 baris meja, setiap baris berisi 7 meja. Berapa total meja di kelas?", ops: "×", ans: 42, hint: "6 baris × 7 meja per baris = total." },
+  { text: "Ibu membawa 48 donat untuk dibagi rata kepada 6 anak. Berapa donat setiap anak?", ops: "÷", ans: 8, hint: "Dibagi rata = pembagian." },
+  { text: "Toko menerima 125 kg beras pagi, lalu 75 kg beras sore. Berapa total beras di toko?", ops: "+", ans: 200, hint: "'Total' = gabung = penjumlahan." },
+  { text: "Ayah punya Rp 50.000. Dia membeli buku seharga Rp 27.000. Berapa sisa uang Ayah?", ops: "−", ans: 23000, hint: "'Sisa' = berkurang = pengurangan." },
+  { text: "Sebuah kotak berisi 8 pensil. Ada 9 kotak. Berapa total pensil?", ops: "×", ans: 72, hint: "9 kotak × 8 pensil = total." }
+];
+
+function renderStoryPractice() {
+  const container = document.getElementById('storyPractice');
+  container.innerHTML = storyProblems.map((s, i) => `
+    <div class="sp-card" data-idx="${i}">
+      <div class="sp-num">${i+1}</div>
+      <div class="sp-text">${s.text}</div>
+      <div class="sp-ops-row">
+        <button class="sp-ops-btn add" data-ops="+">+</button>
+        <button class="sp-ops-btn sub" data-ops="−">−</button>
+        <button class="sp-ops-btn mul" data-ops="×">×</button>
+        <button class="sp-ops-btn div" data-ops="÷">÷</button>
+      </div>
+      <div class="sp-answer-row">
+        <label>Jawaban:</label>
+        <input type="number" class="sp-answer-input" placeholder="=?">
+        <button class="sp-check-btn">Cek</button>
+      </div>
+      <div class="sp-feedback"></div>
+    </div>
+  `).join('');
+  
+  container.querySelectorAll('.sp-card').forEach((card, i) => {
+    const opsBtns = card.querySelectorAll('.sp-ops-btn');
+    const answerRow = card.querySelector('.sp-answer-row');
+    const fb = card.querySelector('.sp-feedback');
+    
+    opsBtns.forEach(btn => {
+      btn.addEventListener('click', () => {
+        opsBtns.forEach(b => b.classList.remove('selected'));
+        btn.classList.add('selected');
+        const chosen = btn.dataset.ops;
+        const correct = storyProblems[i].ops;
+        if (chosen === correct) {
+          answerRow.classList.add('show');
+          fb.className = 'sp-feedback show hint';
+          fb.textContent = '✓ Operasi tepat! Sekarang hitung jawabannya.';
+        } else {
+          answerRow.classList.remove('show');
+          fb.className = 'sp-feedback show wrong';
+          fb.textContent = `✗ Belum tepat. ${storyProblems[i].hint}`;
+        }
+      });
+    });
+    
+    card.querySelector('.sp-check-btn').addEventListener('click', () => {
+      const input = card.querySelector('.sp-answer-input');
+      const userAns = parseInt(input.value);
+      const correctAns = storyProblems[i].ans;
+      if (isNaN(userAns)) {
+        fb.className = 'sp-feedback show wrong';
+        fb.textContent = 'Isi jawaban dulu ya!';
+        return;
+      }
+      if (userAns === correctAns) {
+        card.classList.add('solved');
+        fb.className = 'sp-feedback show correct';
+        fb.textContent = '✓ Benar! Mantap! 🎉';
+      } else {
+        fb.className = 'sp-feedback show wrong';
+        fb.textContent = `✗ Belum tepat. Jawaban: ${correctAns}`;
+      }
+    });
+    
+    card.querySelector('.sp-answer-input').addEventListener('keydown', e => {
+      if (e.key === 'Enter') card.querySelector('.sp-check-btn').click();
+    });
+  });
+}
+renderStoryPractice();
+
+/* ===== SLIDE 8: BINGO ===== */
+const bingoState = {
+  1: { grid: [], currentQ: null, score: 0, marked: new Set() },
+  2: { grid: [], currentQ: null, score: 0, marked: new Set() }
+};
+
+function genBingoQuestion() {
+  const ops = ['+','−','×','÷'];
+  const op = ops[Math.floor(Math.random() * ops.length)];
+  let a, b, ans, text;
+  if (op === '+') {
+    a = 5 + Math.floor(Math.random() * 45);
+    b = 5 + Math.floor(Math.random() * 45);
+    ans = a + b;
+    text = `${a} + ${b}`;
+  } else if (op === '−') {
+    a = 20 + Math.floor(Math.random() * 60);
+    b = 5 + Math.floor(Math.random() * (a - 5));
+    ans = a - b;
+    text = `${a} − ${b}`;
+  } else if (op === '×') {
+    a = 2 + Math.floor(Math.random() * 8);
+    b = 2 + Math.floor(Math.random() * 8);
+    ans = a * b;
+    text = `${a} × ${b}`;
+  } else {
+    b = 2 + Math.floor(Math.random() * 8);
+    ans = 2 + Math.floor(Math.random() * 8);
+    a = b * ans;
+    text = `${a} ÷ ${b}`;
+  }
+  return { text, ans, op };
+}
+
+function buildBingoGrid(playerNum) {
+  // Hasil dari soal-soal acak yang akan muncul, digunakan untuk mengisi grid
+  // Supaya grid tidak kosong, kita generate 25 angka yang merupakan campuran jawaban benar dan distractor
+  const state = bingoState[playerNum];
+  const numbers = new Set();
+  // Buat 25 angka unik dari 1-100
+  while (numbers.size < 25) {
+    numbers.add(1 + Math.floor(Math.random() * 99));
+  }
+  state.grid = Array.from(numbers);
+  
+  const container = document.getElementById(`bingoGrid${playerNum}`);
+  container.innerHTML = state.grid.map((n, i) => 
+    `<div class="bingo-cell" data-idx="${i}" data-val="${n}">${n}</div>`
+  ).join('');
+  
+  container.querySelectorAll('.bingo-cell').forEach(cell => {
+    cell.addEventListener('click', () => {
+      if (!state.currentQ) return;
+      const val = parseInt(cell.dataset.val);
+      if (cell.classList.contains('marked')) return;
+      if (val === state.currentQ.ans) {
+        cell.classList.add('marked');
+        state.marked.add(parseInt(cell.dataset.idx));
+        state.score += 10;
+        document.getElementById(`bingoScore${playerNum}`).textContent = state.score;
+        players[playerNum].score += 10;
+        updatePlayerTags();
+        const fb = document.getElementById(`bingoFeedback${playerNum}`);
+        fb.className = 'bingo-feedback correct';
+        fb.textContent = '✓ Benar! +10 poin';
+        state.currentQ = null;
+        document.getElementById(`bingoQ${playerNum}`).innerHTML = '<span class="q-num">Klik "Soal Baru"</span>';
+        document.getElementById(`bingoInput${playerNum}`).value = '';
+        checkBingo(playerNum);
+      } else {
+        const fb = document.getElementById(`bingoFeedback${playerNum}`);
+        fb.className = 'bingo-feedback wrong';
+        fb.textContent = '✗ Bukan ini. Coba kotak lain!';
+      }
+    });
+  });
+}
+
+function checkBingo(playerNum) {
+  const state = bingoState[playerNum];
+  const marked = state.marked;
+  const size = 5;
+  // Cek baris, kolom, diagonal
+  const lines = [];
+  for (let r = 0; r < size; r++) {
+    lines.push([0,1,2,3,4].map(c => r * size + c));
+  }
+  for (let c = 0; c < size; c++) {
+    lines.push([0,1,2,3,4].map(r => r * size + c));
+  }
+  lines.push([0,6,12,18,24]);
+  lines.push([4,8,12,16,20]);
+  
+  for (const line of lines) {
+    if (line.every(i => marked.has(i))) {
+      // BINGO!
+      line.forEach(i => {
+        const cell = document.querySelector(`#bingoGrid${playerNum} .bingo-cell[data-idx="${i}"]`);
+        if (cell) cell.classList.add('bingo-win');
+      });
+      state.score += 50;
+      players[playerNum].score += 50;
+      document.getElementById(`bingoScore${playerNum}`).textContent = state.score;
+      updatePlayerTags();
+      const fb = document.getElementById(`bingoFeedback${playerNum}`);
+      fb.className = 'bingo-feedback correct';
+      fb.textContent = '🎉 BINGO! +50 poin bonus! 🎉';
+      return;
+    }
+  }
+}
+
+function newBingoQuestion(playerNum) {
+  const state = bingoState[playerNum];
+  state.currentQ = genBingoQuestion();
+  // Pastikan jawaban ada di grid; jika tidak, ganti salah satu sel yang belum ditandai
+  if (!state.grid.includes(state.currentQ.ans)) {
+    const unmarkedIdx = state.grid.map((v, i) => i).filter(i => !state.marked.has(i));
+    if (unmarkedIdx.length > 0) {
+      const replaceIdx = unmarkedIdx[Math.floor(Math.random() * unmarkedIdx.length)];
+      state.grid[replaceIdx] = state.currentQ.ans;
+      const cell = document.querySelector(`#bingoGrid${playerNum} .bingo-cell[data-idx="${replaceIdx}"]`);
+      if (cell) {
+        cell.dataset.val = state.currentQ.ans;
+        cell.textContent = state.currentQ.ans;
+      }
+    }
+  }
+  document.getElementById(`bingoQ${playerNum}`).innerHTML = `Berapa <span class="q-num">${state.currentQ.text}</span>?`;
+  document.getElementById(`bingoInput${playerNum}`).value = '';
+  document.getElementById(`bingoFeedback${playerNum}`).textContent = '';
+  document.getElementById(`bingoFeedback${playerNum}`).className = 'bingo-feedback';
+}
+
+document.getElementById('bingoNew1').addEventListener('click', () => newBingoQuestion(1));
+document.getElementById('bingoNew2').addEventListener('click', () => newBingoQuestion(2));
+document.getElementById('bingoCheck1').addEventListener('click', () => bingoAnswer(1));
+document.getElementById('bingoCheck2').addEventListener('click', () => bingoAnswer(2));
+document.getElementById('bingoInput1').addEventListener('keydown', e => { if (e.key === 'Enter') bingoAnswer(1); });
+document.getElementById('bingoInput2').addEventListener('keydown', e => { if (e.key === 'Enter') bingoAnswer(2); });
+
+function bingoAnswer(playerNum) {
+  const state = bingoState[playerNum];
+  if (!state.currentQ) {
+    const fb = document.getElementById(`bingoFeedback${playerNum}`);
+    fb.className = 'bingo-feedback wrong';
+    fb.textContent = 'Klik "Soal Baru" dulu ya!';
+    return;
+  }
+  const input = document.getElementById(`bingoInput${playerNum}`);
+  const userAns = parseInt(input.value);
+  const fb = document.getElementById(`bingoFeedback${playerNum}`);
+  if (isNaN(userAns)) {
+    fb.className = 'bingo-feedback wrong';
+    fb.textContent = 'Isi jawaban dulu!';
+    return;
+  }
+  if (userAns === state.currentQ.ans) {
+    // Tandai sel dengan nilai jawaban
+    const cell = document.querySelector(`#bingoGrid${playerNum} .bingo-cell[data-val="${state.currentQ.ans}"]:not(.marked)`);
+    if (cell) {
+      cell.classList.add('marked');
+      state.marked.add(parseInt(cell.dataset.idx));
+      state.score += 10;
+      document.getElementById(`bingoScore${playerNum}`).textContent = state.score;
+      players[playerNum].score += 10;
+      updatePlayerTags();
+      fb.className = 'bingo-feedback correct';
+      fb.textContent = '✓ Benar! +10 poin. Klik sel atau ketik jawaban lagi.';
+      state.currentQ = null;
+      document.getElementById(`bingoQ${playerNum}`).innerHTML = '<span class="q-num">Klik "Soal Baru"</span>';
+      input.value = '';
+      checkBingo(playerNum);
+    } else {
+      fb.className = 'bingo-feedback wrong';
+      fb.textContent = 'Sudah ditandai itu. Klik "Soal Baru".';
+    }
+  } else {
+    fb.className = 'bingo-feedback wrong';
+    fb.textContent = `✗ Belum tepat. Coba lagi!`;
+    input.value = '';
+  }
+}
+
+document.getElementById('bingoReset').addEventListener('click', () => {
+  [1,2].forEach(p => {
+    bingoState[p].marked.clear();
+    bingoState[p].currentQ = null;
+    bingoState[p].score = 0;
+    document.getElementById(`bingoScore${p}`).textContent = 0;
+    document.getElementById(`bingoQ${p}`).innerHTML = '<span class="q-num">Klik "Soal Baru"</span>';
+    document.getElementById(`bingoFeedback${p}`).textContent = '';
+    document.getElementById(`bingoFeedback${p}`).className = 'bingo-feedback';
+    document.getElementById(`bingoInput${p}`).value = '';
+    buildBingoGrid(p);
+  });
+});
+
+buildBingoGrid(1);
+buildBingoGrid(2);
+</script>
+</body>
+</html>
